@@ -17,6 +17,13 @@
     <class>Model.ChiTietHoaDon</class>
     <class>Model.KhachHang</class>
     <class>Model.Ve</class>
+    <class>Model.Ghe</class>
+    <class>Model.ChuyenDi</class>
+    <class>Model.ChiTietTrangThaiGhe</class>
+    <class>Model.Toa</class>
+    <class>Model.Tau</class>
+    <class>Model.NhaGa</class>
+    <class>Model.LichCapBenGa</class>
 
     <properties>
       <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/trainsystem"/>
@@ -33,10 +40,25 @@
 
   <!-- Persistence Unit cho MySQL -->
   <persistence-unit name="mysql-pu">
-
+    <class>Model.CaTruc</class>
+    <class>Model.NhanVien</class>
+    <class>Model.TaiKhoan</class>
+    <class>Model.Quyen</class>
+    <class>Model.Trang</class>
+    <class>Model.HoaDon</class>
+    <class>Model.ChiTietHoaDon</class>
+    <class>Model.KhachHang</class>
+    <class>Model.Ve</class>
+    <class>Model.Ghe</class>
+    <class>Model.ChuyenDi</class>
+    <class>Model.ChiTietTrangThaiGhe</class>
+    <class>Model.Toa</class>
+    <class>Model.Tau</class>
+    <class>Model.NhaGa</class>
+    <class>Model.LichCapBenGa</class>
 
     <properties>
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/Example_Hibernate"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/trainsystem"/>
       <property name="jakarta.persistence.jdbc.user" value="root"/>
       <property name="jakarta.persistence.jdbc.password" value="root"/>
       <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>

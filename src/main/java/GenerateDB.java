@@ -3,11 +3,11 @@ import Model.NhanVien;
 import Model.Quyen;
 import Model.TaiKhoan;
 import Model.Trang;
-import net.datafaker.Faker;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import net.datafaker.Faker;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,21 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
-import Model.CaTruc;
-import Model.NhanVien;
-import Model.Quyen;
-import Model.TaiKhoan;
-import Model.Trang;
-import net.datafaker.Faker;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
-
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 
 public class GenerateDB {
     public static void main(String[] args) {
