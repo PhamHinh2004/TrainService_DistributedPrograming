@@ -12,7 +12,6 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
 @AllArgsConstructor
 public class ChuyenDi {
     @Id
