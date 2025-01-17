@@ -8,25 +8,21 @@
 
   <!-- Persistence Unit cho MariaDB -->
   <persistence-unit name="default">
-<<<<<<< HEAD
     <class>Model.CaTruc</class>
     <class>Model.NhanVien</class>
     <class>Model.TaiKhoan</class>
     <class>Model.Quyen</class>
     <class>Model.Trang</class>
-    <properties>
-      <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
-=======
     <class>Model.HoaDon</class>
     <class>Model.ChiTietHoaDon</class>
     <class>Model.KhachHang</class>
     <class>Model.Ve</class>
 
     <properties>
->>>>>>> a4c8d4355815e22eb5066f1b9a3d3581254a7b52
       <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/trainsystem"/>
       <property name="jakarta.persistence.jdbc.user" value="root"/>
       <property name="jakarta.persistence.jdbc.password" value="root"/>
+      <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
       <property name="hibernate.hbm2ddl.auto" value="update"/>
       <property name="hibernate.dialect" value="org.hibernate.dialect.MariaDBDialect"/>
       <property name="hibernate.show_sql" value="true"/>
