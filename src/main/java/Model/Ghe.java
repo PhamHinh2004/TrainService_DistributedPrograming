@@ -5,14 +5,15 @@ import lombok.*;
 
 import java.util.Objects;
 import java.util.Set;
+import Enum.LoaiGhe;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Ghe {
     @Id
     private String maGhe;
@@ -28,6 +29,8 @@ public class Ghe {
     @JoinColumn(name = "toa_id")
     private Toa toa;
 
+    @OneToMany(mappedBy = "ghe")
+    private  Set<Ve> ves;
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;

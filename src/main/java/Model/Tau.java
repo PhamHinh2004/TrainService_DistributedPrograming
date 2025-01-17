@@ -6,13 +6,13 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Tau {
     @Id
     private String soHieu;

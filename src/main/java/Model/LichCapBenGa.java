@@ -1,20 +1,17 @@
 package Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class LichCapBenGa {
     @Id
     private String maLich;

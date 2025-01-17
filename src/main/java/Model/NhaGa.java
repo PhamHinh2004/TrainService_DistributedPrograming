@@ -1,20 +1,17 @@
 package Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class NhaGa {
     @Id
     private String maNhaGa;

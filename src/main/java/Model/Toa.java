@@ -5,13 +5,13 @@ import lombok.*;
 
 import java.util.Set;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class Toa {
     @Id
     private String maToa;

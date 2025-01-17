@@ -47,4 +47,7 @@ public class NhanVien {
     @OneToOne(mappedBy = "nhanvien", cascade = CascadeType.ALL)
     private TaiKhoan taikhoan;
 
+    @OneToMany(mappedBy = "nhanVien")
+    private Set<HoaDon> hoaDons;
+
 }

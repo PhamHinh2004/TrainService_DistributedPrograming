@@ -1,21 +1,18 @@
 package Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Table
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class ChiTietTrangThaiGhe {
     @Id
     private String maTrangThaiGhe;
@@ -37,4 +34,5 @@ public class ChiTietTrangThaiGhe {
     public int hashCode() {
         return Objects.hash(getMaTrangThaiGhe());
     }
+
 }
