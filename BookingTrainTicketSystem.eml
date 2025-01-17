@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_22" inherit-compiler-output="true" inheritJdk="true">
+	<output-test url="file://$MODULE_DIR$/../../out/test/BookingTrainTicketSystem"/>
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$/../../TrainService_DistributedPrograming">
+		<excludeFolder url="file://$MODULE_DIR$/../../TrainService_DistributedPrograming/.gradle"/>
+		<excludeFolder url="file://$MODULE_DIR$/../../TrainService_DistributedPrograming/build"/>
+		<excludeFolder url="file://$MODULE_DIR$/../../TrainService_DistributedPrograming/out"/>
+	</contentEntry>
+</component>
