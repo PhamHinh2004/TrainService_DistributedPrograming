@@ -8,8 +8,12 @@
         <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+<<<<<<< HEAD
+        <option name="gradleJvm" value="JDK22" />
+=======
         <option name="gradleHome" value="C:/Tools/Gradle/gradle-8.12" />
         <option name="gradleJvm" value="22" />
+>>>>>>> a4c8d4355815e22eb5066f1b9a3d3581254a7b52
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />

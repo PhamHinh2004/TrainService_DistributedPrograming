@@ -8,6 +8,11 @@
 
   <!-- Persistence Unit cho MariaDB -->
   <persistence-unit name="default">
+    <class>Model.CaTruc</class>
+    <class>Model.NhanVien</class>
+    <class>Model.TaiKhoan</class>
+    <class>Model.Quyen</class>
+    <class>Model.Trang</class>
     <class>Model.HoaDon</class>
     <class>Model.ChiTietHoaDon</class>
     <class>Model.KhachHang</class>
