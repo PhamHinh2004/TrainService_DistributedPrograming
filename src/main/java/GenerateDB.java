@@ -3,6 +3,7 @@ import Model.NhanVien;
 import Model.Quyen;
 import Model.TaiKhoan;
 import Model.Trang;
+import Enum.GioiTinh;
 import net.datafaker.Faker;
 
 import jakarta.persistence.EntityManager;
@@ -12,7 +13,7 @@ import jakarta.persistence.Persistence;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import Model.CaTruc;
@@ -27,9 +28,7 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 public class GenerateDB {
     public static void main(String[] args) {
@@ -49,7 +48,9 @@ public class GenerateDB {
                 NhanVien nhanVien = new NhanVien();
                 nhanVien.setMaNhanVien(faker.idNumber().valid());
                 nhanVien.setTenNhanVien(faker.name().fullName());
-                nhanVien.setGioiTinh(faker.options().option("Nam", "Nữ"));
+                GioiTinh[] gioiTinhs = GioiTinh.values();
+                GioiTinh gioiTinh = gioiTinhs[new Random().nextInt(gioiTinhs.length)];
+                nhanVien.setGioiTinh(gioiTinh);  // Set giá trị enum
                 String soDienThoai = faker.phoneNumber().cellPhone();
                 if (soDienThoai.length() > 11) {
                     soDienThoai = soDienThoai.substring(0, 11); // Cắt bớt nếu dài hơn 11 ký tự
