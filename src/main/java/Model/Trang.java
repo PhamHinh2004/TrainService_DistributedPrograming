@@ -26,6 +26,10 @@ public class Trang {
     @JoinColumn(name = "taikhoan_id", referencedColumnName = "taikhoan_id", nullable = false)
     private TaiKhoan taikhoan;
 
-    @OneToMany(mappedBy = "trang", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "trang_quyen",
+            joinColumns = @JoinColumn(name = "trang_id"),
+            inverseJoinColumns = @JoinColumn(name = "quyen_id"))
     private Set<Quyen> quyen;
 }
