@@ -1,8 +1,4 @@
-import Model.CaTruc;
-import Model.NhanVien;
-import Model.Quyen;
-import Model.TaiKhoan;
-import Model.Trang;
+import Model.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -14,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
+import  Enum.TrangThaiHoaDon;
+import  Enum.GioiTinh;
 
 
 
@@ -78,13 +76,68 @@ public class GenerateDB {
                 caTruc.setTongVat(faker.number().randomDouble(2, 100, 1000));
                 caTruc.setNhanvien(nhanVien);
 
+                // Tao HoaDon cho NhanVien
+                HoaDon hoaDon = new HoaDon();
+                hoaDon.setMaHoaDon(faker.idNumber().valid());
+                hoaDon.setNgayLapHoaDon(LocalDate.now().minusDays(ThreadLocalRandom.current().nextInt(1, 30)));
+                hoaDon.setSoLuongKhachHangNguoiLon(ThreadLocalRandom.current().nextInt(1, 5));
+                hoaDon.setSoLuongKhachHangTreEm(ThreadLocalRandom.current().nextInt(0, 3));
+                hoaDon.setTenNguoiMua(faker.name().fullName());
+                hoaDon.setSoDienThoaiNguoiMua("0" + faker.number().digits(9));
+                hoaDon.setThanhTien(faker.number().randomDouble(2, 100000, 1000000));
+                hoaDon.setTongTien(hoaDon.getThanhTien() + faker.number().randomDouble(2, 50, 500));
+                hoaDon.setNgayChinhSuaGanNhat(hoaDon.getNgayLapHoaDon().plusDays(ThreadLocalRandom.current().nextInt(1, 10)));
+                hoaDon.setTrangThai(faker.options().option(TrangThaiHoaDon.values()));
+                hoaDon.setNhanVien(nhanVien);
+
+                // Tao KhachHang
+                KhachHang khachHang = new KhachHang();
+                khachHang.setMaKhachHang(faker.idNumber().valid());
+                khachHang.setTenKhachHang(faker.name().fullName());
+                khachHang.setSoDienThoai("0" + faker.number().digits(9));
+                khachHang.setEmail(faker.internet().emailAddress());
+                khachHang.setGioiTinh(faker.options().option(GioiTinh.values()));
+                khachHang.setCCCD(String.format("%012d", faker.number().numberBetween(100000000000L, 999999999999L)));
+
+                // Tạo dữ liệu giả cho vé
+                Ve ve = new Ve();
+                ve.setMaVe(faker.idNumber().valid());
+                ve.setNgayKhoiHanh(LocalDate.now().plusDays(ThreadLocalRandom.current().nextInt(1, 30)));
+                ve.setNgayDatVe(LocalDate.now().minusDays(ThreadLocalRandom.current().nextInt(1, 30)));
+                ve.setNhaGaKhoiHanh(faker.address().cityName());
+                ve.setNhaGaKetThuc(faker.address().cityName());
+                ve.setLoaiVe(faker.options().option("Thường", "VIP", "Gia đình"));
+                ve.setGiaVe(faker.number().randomDouble(2, 100000, 1000000));
+                ve.setLoaiGhe(faker.options().option("Ghế cứng", "Ghế mềm", "Giường nằm"));
+                ve.setViTriGhe((char) ('A' + ThreadLocalRandom.current().nextInt(0, 26)) + String.valueOf(ThreadLocalRandom.current().nextInt(1, 51)));
+                ve.setTenToa("Toa " + ThreadLocalRandom.current().nextInt(1, 10));
+                ve.setSoHieuTau("Tau " + ThreadLocalRandom.current().nextInt(100, 999));
+                ve.setMoTa("");
+
+                // Tạo ChiTietHoaDon cho mỗi HoaDon
+                ChiTietHoaDon chiTietHoaDon = new ChiTietHoaDon();
+                chiTietHoaDon.setHoaDon(hoaDon);
+                chiTietHoaDon.setKhachHang(khachHang);
+                chiTietHoaDon.setVe(ve);
+                chiTietHoaDon.setGiaVe(ve.getGiaVe());
+                chiTietHoaDon.setNgayTaoChiTietHoaDon(hoaDon.getNgayLapHoaDon());
+                chiTietHoaDon.setNgayChinhSuaGanNhat(null);
+                chiTietHoaDon.setThueVAT(hoaDon.getTongTien() * 0.1);  // Example VAT
+
+
+
                 // Persist các đối tượng vào cơ sở dữ liệu
                 em.persist(nhanVien);
                 em.persist(taiKhoan);
                 em.persist(trang);
                 em.persist(quyen);
                 em.persist(caTruc);
+                em.persist(hoaDon);
+                em.persist(khachHang);
+                em.persist(ve);
+                em.persist(chiTietHoaDon);
             }
+
 
             tr.commit();
             System.out.println("Dữ liệu giả đã được thêm vào cơ sở dữ liệu.");

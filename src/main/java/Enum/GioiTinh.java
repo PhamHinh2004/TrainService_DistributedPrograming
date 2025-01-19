@@ -1,7 +1,7 @@
 package Enum;
 
 public enum GioiTinh {
-    Nam("Nam"), NU("Nữ");
+    NAM("Nam"), NU("Nữ");
 
     private String TenGioiTinh;
 
