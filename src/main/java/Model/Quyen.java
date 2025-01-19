@@ -22,8 +22,8 @@ public class Quyen {
     @Column(name = "tenQuyen")
     private String tenQuyen;
 
-    @ManyToOne
-    @JoinColumn(name = "trang_id", referencedColumnName = "trang_id", nullable = false)
-    private Trang trang;
+
+    @ManyToMany(mappedBy = "quyen")
+    private Set<Trang> trang;
 
 }

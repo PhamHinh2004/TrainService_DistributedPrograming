@@ -32,6 +32,9 @@ public class HoaDon {
     @OneToMany(mappedBy = "hoaDon")
     private List<ChiTietHoaDon> danhSachCTHD;
 
+    @ManyToOne
+    @JoinColumn(name = "nhanvien_id")
+    private NhanVien nhanVien;
     public HoaDon() {}
 
     public HoaDon(String maHoaDon, LocalDate ngayLapHoaDon, int soLuongKhachHangNguoiLon, int soLuongKhachHangTreEm, String tenNguoiMua, String soDienThoaiNguoiMua, double thanhTien, double tongTien, LocalDate ngayChinhSuaGanNhat, TrangThaiHoaDon trangThai, List<ChiTietHoaDon> danhSachCTHD) {

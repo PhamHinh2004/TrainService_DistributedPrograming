@@ -1,9 +1,6 @@
 package Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +29,10 @@ public class Ve {
     private String tenToa;
     private String soHieuTau;
     private String moTa;
+
+    @ManyToOne
+    @JoinColumn(name = "ghe_id")
+    private Ghe ghe;
 
     @OneToOne(mappedBy = "ve")
     private ChiTietHoaDon chiTietHoaDon;

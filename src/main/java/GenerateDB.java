@@ -10,25 +10,19 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
-import Model.CaTruc;
-import Model.NhanVien;
-import Model.Quyen;
-import Model.TaiKhoan;
-import Model.Trang;
-import net.datafaker.Faker;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
-
-import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class GenerateDB {
     public static void main(String[] args) {
@@ -38,25 +32,45 @@ public class GenerateDB {
 
         // Khởi tạo Faker để tạo dữ liệu giả
         Faker faker = new Faker(new Locale("vi"));
-
+        Random random = new Random();
+        int nvID=1;
         try {
             tr.begin();
 
             // Tạo dữ liệu giả cho NhanVien và các đối tượng liên quan
-            for (int i = 0; i < 10; i++) {  // Tạo 10 nhân viên giả
+            for (int i = 0; i < 20; i++) {  // Tạo 10 nhân viên giả
                 // Tạo NhanVien
                 NhanVien nhanVien = new NhanVien();
-                nhanVien.setMaNhanVien(faker.idNumber().valid());
+                String id = String.format("NV%03d", nvID++);
+                nhanVien.setMaNhanVien(id);
                 nhanVien.setTenNhanVien(faker.name().fullName());
                 GioiTinh[] gioiTinhs = GioiTinh.values();
                 GioiTinh gioiTinh = gioiTinhs[new Random().nextInt(gioiTinhs.length)];
                 nhanVien.setGioiTinh(gioiTinh);  // Set giá trị enum
-                String soDienThoai = faker.phoneNumber().cellPhone();
-                if (soDienThoai.length() > 11) {
-                    soDienThoai = soDienThoai.substring(0, 11); // Cắt bớt nếu dài hơn 11 ký tự
-                }
+                String dauSo = random.nextBoolean() ? "09" : "03";
+                String soDienThoai = dauSo + faker.number().digits(9);
+
+                int age = random.nextInt(43) + 18;  // Tuổi ngẫu nhiên từ 18 đến 60
+                // Tính số ngày của tuổi ngẫu nhiên (18-60 tuổi)
+                long maxAgeInDays = ChronoUnit.DAYS.between(LocalDate.of(1960, 1, 1), LocalDate.now().minusYears(18)); // Ngày của 18 tuổi
+                long minAgeInDays = ChronoUnit.DAYS.between(LocalDate.of(1960, 1, 1), LocalDate.now().minusYears(60)); // Ngày của 60 tuổi
+
+                // Tạo một số ngẫu nhiên trong khoảng số ngày của 18-60 tuổi
+                long randomDays = minAgeInDays + random.nextLong(maxAgeInDays - minAgeInDays);
+
+                // Tạo ngày sinh ngẫu nhiên từ số ngày
+                LocalDate randomBirthDate = LocalDate.of(1960, 1, 1).plusDays(randomDays);
+
+                String ngaySinh = randomBirthDate.toString();
+                nhanVien.setNgaySinh(ngaySinh);
                 nhanVien.setSoDienThoai(soDienThoai);
-                nhanVien.setEmail(faker.internet().emailAddress());
+
+                // Tạo email theo định dạng
+                String email = Normalizer.normalize(nhanVien.getTenNhanVien(), Normalizer.Form.NFD)
+                        .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                        .replaceAll("\\s+", "")
+                        .toLowerCase() + "@gmail.com";
+                nhanVien.setEmail(email);
                 nhanVien.setCCCD(faker.idNumber().valid());
 
                 // Tạo TaiKhoan cho NhanVien
@@ -78,7 +92,7 @@ public class GenerateDB {
                 Quyen quyen = new Quyen();
                 quyen.setMaQuyen(faker.idNumber().valid());
                 quyen.setTenQuyen(faker.options().option("Read", "Write", "Delete", "Update"));
-                quyen.setTrang(trang);
+                quyen.setTrang(new HashSet<>(Arrays.asList(trang)));
 
                 // Tạo CaTruc cho NhanVien
                 CaTruc caTruc = new CaTruc();
