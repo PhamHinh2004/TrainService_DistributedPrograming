@@ -3,9 +3,8 @@ package Model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.Set;
+import Enum.GioiTinh;
 
 @Data
 @Entity
@@ -29,8 +28,8 @@ public class NhanVien {
     @Column(name = "ngaySinh", columnDefinition = "date")
     private String ngaySinh;
 
-    @Column(name = "gioiTinh", length = 10)
-    private String gioiTinh;
+    @Enumerated(EnumType.STRING)
+    private GioiTinh gioiTinh;
 
     @Column(name ="soDienThoai", length = 20)
     private String soDienThoai;
