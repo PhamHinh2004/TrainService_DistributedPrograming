@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="650.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.HomePageController">
+    <top>
+        <VBox BorderPane.alignment="CENTER">
+            <children>
+                <Pane fx:id="headerImagePane" maxHeight="200.0" minHeight="150.0" prefHeight="200.0" style="-fx-background-color: lightgray;">
+                    <VBox.margin>
+                        <Insets />
+                    </VBox.margin>
+                    <children>
+                        <Label layoutX="31.0" layoutY="60.0" text="Hệ Thống Quản Lý Bán" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="36.0" />
+                            </font>
+                        </Label>
+                        <Label layoutX="271.0" layoutY="110.0" text="Vé của " textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="36.0" />
+                            </font>
+                        </Label>
+                        <Label layoutX="400.0" layoutY="110.0" text="Nhà Ga Gò Vấp" textFill="#2e86de">
+                            <font>
+                                <Font name="System Bold" size="36.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </Pane>
+                <HBox alignment="CENTER_RIGHT" prefHeight="43.0">
+                    <children>
+                        <Label text="18-04-2025" textFill="#333333">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                            <HBox.margin>
+                                <Insets right="20.0" />
+                            </HBox.margin>
+                        </Label>
+                        <Label text="10:00" textFill="#2e86de">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                            <HBox.margin>
+                                <Insets right="30.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="20.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Thông tin nhân viên:" textFill="#333333">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <GridPane style="-fx-background-color: white; -fx-border-color: #e0e0e0; -fx-border-width: 1px;">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="235.0" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="389.0" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="389.0" minWidth="10.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="389.0" minWidth="10.0" prefWidth="150.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Họ và tên:" textFill="#666666">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                            <GridPane.margin>
+                                <Insets left="15.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Mã nhân viên:" textFill="#666666" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                            <GridPane.margin>
+                                <Insets left="15.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Chức vụ:" textFill="#666666" GridPane.rowIndex="2">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                            <GridPane.margin>
+                                <Insets left="15.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Dương Thế Khánh" GridPane.columnIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                        <Label text="22660101" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                        <Label text="Nhân viên" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                        <Label text="Ca làm:" textFill="#666666" GridPane.columnIndex="2">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                            <GridPane.margin>
+                                <Insets left="15.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Giờ đăng nhập:" textFill="#666666" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                            <GridPane.margin>
+                                <Insets left="15.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <Label text="Sáng" GridPane.columnIndex="3">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                        <Label text="09:05" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                    </padding>
+                </GridPane>
+                <Label text="Thống kê nhanh:" textFill="#333333">
+                    <font>
+                        <Font name="System Bold" size="18.0" />
+                    </font>
+                </Label>
+                <GridPane hgap="20.0" prefHeight="150.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <VBox alignment="CENTER" style="-fx-background-color: #2196f3; -fx-background-radius: 10;">
+                            <children>
+                                <Label text="Số vé đã bán:" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="56 vé" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER" style="-fx-background-color: #00c853; -fx-background-radius: 10;" GridPane.columnIndex="1">
+                            <children>
+                                <Label text="Khách phục vụ:" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="20 người" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER" style="-fx-background-color: #ff9800; -fx-background-radius: 10;" GridPane.columnIndex="2">
+                            <children>
+                                <Label text="Doanh thu:" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="14.000.000VNĐ" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox alignment="CENTER" style="-fx-background-color: #f44336; -fx-background-radius: 10;" GridPane.columnIndex="3">
+                            <children>
+                                <Label text="Hóa đơn đã lập:" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="20 hóa đơn" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </GridPane>
+            </children>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </center>
+</BorderPane>

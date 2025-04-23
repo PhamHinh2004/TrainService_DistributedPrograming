@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<!-- Corrected the fx:controller value below -->
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: linear-gradient(to bottom right, #1a237e, #3949ab);" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.LoginController">
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+            <children>
+                <StackPane>
+                    <children>
+                        <VBox alignment="CENTER" maxWidth="400.0" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 10px;">
+                            <padding>
+                                <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                            </padding>
+                            <children>
+                                <StackPane prefHeight="80.0" prefWidth="80.0" style="-fx-background-color: #f0f0f0; -fx-background-radius: 40;">
+                                    <children>
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="🚆">
+                                            <font>
+                                                <Font name="System Bold" size="40.0" />
+                                            </font>
+                                        </Text>
+                                    </children>
+                                </StackPane>
+                                <Text fill="#1a237e" strokeType="OUTSIDE" strokeWidth="0.0" text="ĐĂNG NHẬP HỆ THỐNG">
+                                    <font>
+                                        <Font name="System Bold" size="20.0" />
+                                    </font>
+                                </Text>
+                                <Text fill="GREY" strokeType="OUTSIDE" strokeWidth="0.0" text="Hệ Thống Đặt Vé Ga Tàu Dành Cho Nhân Viên">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Text>
+                                <Separator prefWidth="200.0" />
+                                <!-- HBox wrapper for left alignment of the label -->
+                                <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"> <!-- Use maxWidth to make HBox fill width -->
+                                    <children>
+                                        <Label text="Tên đăng nhập:">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <TextField fx:id="userField" prefHeight="35.0" promptText="Nhập tên đăng nhập của bạn" style="-fx-background-radius: 5px;" />
+                                <!-- HBox wrapper for left alignment of the label -->
+                                <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"> <!-- Use maxWidth to make HBox fill width -->
+                                    <children>
+                                        <Label text="Mật khẩu:">
+                                            <font>
+                                                <Font size="14.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <PasswordField fx:id="passwordField" prefHeight="35.0" promptText="Nhập mật khẩu của bạn" style="-fx-background-radius: 5px;" />
+                                <CheckBox fx:id="rememberMe" mnemonicParsing="false" text="Nhớ mật khẩu" />
+                                <Button fx:id="loginButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLoginAction" prefHeight="40.0" style="-fx-background-color: #1a237e; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5px;" text="ĐĂNG NHẬP" />
+                                <Hyperlink fx:id="forgotPassword" onAction="#handleForgotPassword" text="Quên mật khẩu?" textFill="#3949ab" />
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="© 2025 Hệ Thống Đặt Vé Ga Tàu | Phiên bản 1.0" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>
