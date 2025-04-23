@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
+import Enum.LoaiDichVu;
 
 @Data
 @Entity
@@ -17,10 +18,18 @@ public class Toa {
     private String maToa;
 
     private String tenToa;
-    private int soLuongGhe;
+
+    @Enumerated(EnumType.STRING)
+    private LoaiDichVu loaToa;
+
+    private int soLuongCho;
+
+// ======================================
     @OneToMany(mappedBy = "toa")
     @ToString.Exclude
-    Set<Ghe> ghes;
+    Set<Ghe> ghe;
+
+
     @ManyToOne
     @JoinColumn(name = "toa_id")
     private Tau tau;

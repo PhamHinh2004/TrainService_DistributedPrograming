@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import Enum.TrangThaiTau;
+
 @Data
 @Entity
 @Table
@@ -16,15 +18,21 @@ import java.util.Set;
 public class Tau {
     @Id
     private String soHieu;
-    private String soluongToiDa;
+
+    private int soluongToa;
     private String quocGia;
     private String chuSoHuu;
     private LocalDateTime ngayBatDauVanHanh;
+
+    @Enumerated(EnumType.STRING)
+    private TrangThaiTau trangThai;
+
+// ============================
     @OneToMany(mappedBy = "tau")
     @ToString.Exclude
     private Set<Toa> toas;
 
     @OneToMany(mappedBy = "tau")
     @ToString.Exclude
-    private Set<LichCapBenGa> lichCapBenGas;
+    private Set<LichTrinh> lichCapBenGases;
 }

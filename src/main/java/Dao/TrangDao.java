@@ -1,17 +1,18 @@
 package Dao;
+import Model.NhomQuyen;
 import jakarta.persistence.*;
-import Model.Trang;
+
 import java.util.List;
 
 public class TrangDao {
     private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
 
-    public void themTrang(Trang trang) {
+    public void themTrang(NhomQuyen nhomQuyen) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            em.persist(trang);
+            em.persist(nhomQuyen);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -23,12 +24,12 @@ public class TrangDao {
         }
     }
 
-    public void capNhatTrang(Trang trang) {
+    public void capNhatTrang(NhomQuyen nhomQuyen) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            em.merge(trang);
+            em.merge(nhomQuyen);
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) {
@@ -45,9 +46,9 @@ public class TrangDao {
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
-            Trang trang = em.find(Trang.class, maSoTrang);
-            if (trang != null) {
-                em.remove(trang);
+            NhomQuyen nhomQuyen = em.find(NhomQuyen.class, maSoTrang);
+            if (nhomQuyen != null) {
+                em.remove(nhomQuyen);
             }
             transaction.commit();
         } catch (Exception e) {
@@ -60,19 +61,19 @@ public class TrangDao {
         }
     }
 
-    public Trang timTheoMaID(String maSoTrang) {
+    public NhomQuyen timTheoMaID(String maSoTrang) {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.find(Trang.class, maSoTrang);
+            return em.find(NhomQuyen.class, maSoTrang);
         } finally {
             em.close();
         }
     }
 
-    public List<Trang> dsCacTrang() {
+    public List<NhomQuyen> dsCacTrang() {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("SELECT t FROM Trang t", Trang.class).getResultList();
+            return em.createQuery("SELECT t FROM NhomQuyen t", NhomQuyen.class).getResultList();
         } finally {
             em.close();
         }

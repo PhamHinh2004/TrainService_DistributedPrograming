@@ -1,10 +1,8 @@
 package Test;
 
-import Dao.ChiTietHoaDonDao;
 import Dao.HoaDonDao;
 import Dao.KhachHangDao;
 import Dao.VeDao;
-import Model.ChiTietHoaDon;
 import Model.HoaDon;
 import Model.KhachHang;
 import Model.Ve;

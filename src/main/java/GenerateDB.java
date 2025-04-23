@@ -3,7 +3,7 @@ import Model.CaTruc;
 import Model.NhanVien;
 import Model.Quyen;
 import Model.TaiKhoan;
-import Model.Trang;
+import Model.NhomQuyen;
 import Enum.GioiTinh;
 import net.datafaker.Faker;
 
@@ -16,8 +16,6 @@ import jakarta.persistence.Persistence;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -25,11 +23,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.Random;
 
 import  Enum.TrangThaiHoaDon;
-import  Enum.GioiTinh;
 
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 public class GenerateDB {
     public static void main(String[] args) {
@@ -88,18 +83,18 @@ public class GenerateDB {
                 taiKhoan.setVaiTro(faker.options().option("Admin", "User", "Manager"));
                 taiKhoan.setNhanvien(nhanVien);
 
-                // Tạo Trang cho TaiKhoan
-                Trang trang = new Trang();
-                trang.setMaSoTrang(faker.idNumber().valid());
-                trang.setTenTrang(faker.options().option("Trang Chủ", "Trang Quản Lý Hóa Đơn", "Trang Quản Lý Nhân Viên"
-                        ,"Trang Quản Lý Vé", "Trang Quản Lý Khách Hàng", "Trang Thống Kê"));
-                trang.setTaikhoan(taiKhoan);
+                // Tạo NhomQuyen cho TaiKhoan
+                NhomQuyen nhomQuyen = new NhomQuyen();
+                nhomQuyen.setMaSoTrang(faker.idNumber().valid());
+                nhomQuyen.setTenTrang(faker.options().option("NhomQuyen Chủ", "NhomQuyen Quản Lý Hóa Đơn", "NhomQuyen Quản Lý Nhân Viên"
+                        ,"NhomQuyen Quản Lý Vé", "NhomQuyen Quản Lý Khách Hàng", "NhomQuyen Thống Kê"));
+                nhomQuyen.setTaikhoan(taiKhoan);
 
-                // Tạo Quyen cho Trang
+                // Tạo Quyen cho NhomQuyen
                 Quyen quyen = new Quyen();
                 quyen.setMaQuyen(faker.idNumber().valid());
                 quyen.setTenQuyen(faker.options().option("Read", "Write", "Delete", "Update"));
-                quyen.setTrang(new HashSet<>(Arrays.asList(trang)));
+                quyen.setNhomQuyen(new HashSet<>(Arrays.asList(nhomQuyen)));
 
                 // Tạo CaTruc cho NhanVien
                 CaTruc caTruc = new CaTruc();
@@ -167,7 +162,7 @@ public class GenerateDB {
                 // Persist các đối tượng vào cơ sở dữ liệu
                 em.persist(nhanVien);
                 em.persist(taiKhoan);
-                em.persist(trang);
+                em.persist(nhomQuyen);
                 em.persist(quyen);
                 em.persist(caTruc);
                 em.persist(hoaDon);

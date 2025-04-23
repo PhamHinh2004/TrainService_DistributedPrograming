@@ -15,6 +15,7 @@ import java.util.Set;
 public class NhaGa {
     @Id
     private String maNhaGa;
+
     private String tenNhaGa;
     private String diaChi;
     private String thanhPho;
@@ -23,7 +24,8 @@ public class NhaGa {
     private String diaChiWebSite;
     private int SoThuTuNhaGa;
 
+    // ================================
     @OneToMany(mappedBy = "nhaGa")
     @ToString.Exclude
-    Set<LichCapBenGa> lichCapBenGas;
+    Set<LichTrinh> lichCapBenGases;
 }

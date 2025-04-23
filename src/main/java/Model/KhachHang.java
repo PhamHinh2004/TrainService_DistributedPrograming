@@ -1,11 +1,9 @@
 package Model;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import Enum.GioiTinh;
+import org.checkerframework.checker.units.qual.N;
 
 import java.util.List;
 
@@ -14,10 +12,13 @@ import java.util.List;
 @Getter
 @ToString
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class KhachHang {
     @Id
     @EqualsAndHashCode.Include
     private String maKhachHang;
+
     private String tenKhachHang;
     private String soDienThoai;
     private String email;
@@ -27,18 +28,4 @@ public class KhachHang {
 
     private String CCCD;
 
-    @OneToMany(mappedBy = "khachHang")
-    private List<ChiTietHoaDon> danhSachCTHD;
-
-    public KhachHang() {}
-
-    public KhachHang(String maKhachHang, String tenKhachHang, String soDienThoai, String email, GioiTinh gioiTinh, String CCCD, List<ChiTietHoaDon> danhSachCTHD) {
-        this.maKhachHang = maKhachHang;
-        this.tenKhachHang = tenKhachHang;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
-        this.gioiTinh = gioiTinh;
-        this.CCCD = CCCD;
-        this.danhSachCTHD = danhSachCTHD;
-    }
 }

@@ -4,50 +4,42 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import Enum.TrangThaiHoaDon;
+import Enum.LoaiHoaDon;
 
 @Entity
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class HoaDon {
     @Id
     @EqualsAndHashCode.Include
     private String maHoaDon;
 
+    @Enumerated(EnumType.STRING)
+    private LoaiHoaDon loaiHoaDon;
+
     private LocalDate ngayLapHoaDon;
-    private int soLuongKhachHangNguoiLon;
-    private int soLuongKhachHangTreEm;
+    private String gaKhoiHanh;
+    private String gaDen;
     private String tenNguoiMua;
     private String soDienThoaiNguoiMua;
     private double thanhTien;
     private double tongTien;
-    private LocalDate ngayChinhSuaGanNhat;
+    private LocalDateTime ngayChinhSuaGanNhat;
 
     @Enumerated(EnumType.STRING)
     private TrangThaiHoaDon trangThai;
 
-    @OneToMany(mappedBy = "hoaDon")
-    private List<ChiTietHoaDon> danhSachCTHD;
 
+// =======================================
     @ManyToOne
     @JoinColumn(name = "nhanvien_id")
     private NhanVien nhanVien;
-    public HoaDon() {}
 
-    public HoaDon(String maHoaDon, LocalDate ngayLapHoaDon, int soLuongKhachHangNguoiLon, int soLuongKhachHangTreEm, String tenNguoiMua, String soDienThoaiNguoiMua, double thanhTien, double tongTien, LocalDate ngayChinhSuaGanNhat, TrangThaiHoaDon trangThai, List<ChiTietHoaDon> danhSachCTHD) {
-        this.maHoaDon = maHoaDon;
-        this.ngayLapHoaDon = ngayLapHoaDon;
-        this.soLuongKhachHangNguoiLon = soLuongKhachHangNguoiLon;
-        this.soLuongKhachHangTreEm = soLuongKhachHangTreEm;
-        this.tenNguoiMua = tenNguoiMua;
-        this.soDienThoaiNguoiMua = soDienThoaiNguoiMua;
-        this.thanhTien = thanhTien;
-        this.tongTien = tongTien;
-        this.ngayChinhSuaGanNhat = ngayChinhSuaGanNhat;
-        this.trangThai = trangThai;
-        this.danhSachCTHD = danhSachCTHD;
-    }
 }

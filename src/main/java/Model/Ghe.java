@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.Objects;
 import java.util.Set;
-import Enum.LoaiGhe;
+import Enum.LoaiDichVu;
 
 @Data
 @Entity
@@ -18,13 +18,12 @@ public class Ghe {
     @Id
     private String maGhe;
     private String viTriGhe;
+
     @Enumerated(EnumType.STRING)
-    private LoaiGhe loaiGhe;
+    private LoaiDichVu loaiGhe;
 
-    @OneToMany(mappedBy = "ghe")
-    @ToString.Exclude
-    Set<ChuyenDi> chuyenDis;
 
+// ================================
     @ManyToOne
     @JoinColumn(name = "toa_id")
     private Toa toa;
