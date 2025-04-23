@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import Model.CaTruc;
 import Model.NhanVien;
 import Model.Quyen;
@@ -6,9 +6,8 @@ import Model.TaiKhoan;
 import Model.Trang;
 import Enum.GioiTinh;
 import net.datafaker.Faker;
-=======
+
 import Model.*;
->>>>>>> 07ed96869bc1b78a2c83eed6146ccf80d77a13d7
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -22,12 +21,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-<<<<<<< HEAD
+
 import java.util.Random;
-=======
+
 import  Enum.TrangThaiHoaDon;
 import  Enum.GioiTinh;
->>>>>>> 07ed96869bc1b78a2c83eed6146ccf80d77a13d7
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;

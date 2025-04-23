@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<VBox alignment="TOP_CENTER" prefHeight="540.0" prefWidth="650.0" spacing="15.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.QuanLyHoaDonController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <!-- Tiêu đề trang -->
+        <Label text="Danh Sách Hóa Đơn">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </Label>
+
+        <!-- Hàng các control tìm kiếm và lọc -->
+        <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="10.0">
+            <children>
+                <!-- THÊM fx:id="btnSearch" VÀO NÚT TÌM KIẾM -->
+                <Button fx:id="btnSearch" mnemonicParsing="false" text="Tìm kiếm" style="-fx-background-color: #0066cc; -fx-text-fill: white;">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Button>
+                <!-- THÊM fx:id="txtSearch" VÀO TRƯỜNG TEXTFIELD -->
+                <TextField fx:id="txtSearch" prefWidth="250.0" promptText="Theo mã hóa đơn hoặc tên khách hàng" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label text="Trạng thái:">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+                <!-- THÊM fx:id="cmbStatus" VÀO COMBOBOX -->
+                <ComboBox fx:id="cmbStatus" prefWidth="100.0" promptText="Chọn trạng thái">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <!-- Bỏ comment lại các giá trị nếu bạn muốn chúng được định nghĩa trong FXML -->
+<!--                            <String fx:value="Tất cả" />-->
+<!--                            <String fx:value="Chưa in" />-->
+<!--                            <String fx:value="Đã in" />-->
+                        </FXCollections>
+                    </items>
+                    <value>
+                        <!-- Bỏ comment lại giá trị mặc định nếu bạn muốn định nghĩa trong FXML -->
+<!--                        <String fx:value="Tất cả" />-->
+                    </value>
+                </ComboBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <!-- THÊM fx:id="btnDetail" VÀO NÚT CHI TIẾT -->
+                <Button fx:id="btnDetail" mnemonicParsing="false" text="Chi tiết" style="-fx-background-color: #0066cc; -fx-text-fill: white;">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Button>
+                <!-- THÊM fx:id="btnExport" VÀO NÚT XUẤT FILE -->
+                <Button fx:id="btnExport" mnemonicParsing="false" text="Xuất File" style="-fx-background-color: #0066cc; -fx-text-fill: white;">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Button>
+            </children>
+        </HBox>
+
+        <!-- Khu vực hiển thị bảng danh sách hóa đơn -->
+        <!-- fx:id="invoiceTable" Đã có, các TableColumn fx:id cũng đã có -->
+        <TableView fx:id="invoiceTable" prefHeight="400.0" prefWidth="600.0" VBox.vgrow="ALWAYS" style="-fx-background-color: #f0f0f0;">
+            <columns>
+                <TableColumn fx:id="sttColumn" prefWidth="50.0" text="STT" />
+                <TableColumn fx:id="maHdColumn" prefWidth="100.0" text="Mã HĐ" />
+                <TableColumn fx:id="maKhColumn" prefWidth="100.0" text="Mã KH" />
+                <TableColumn fx:id="thanhTienColumn" prefWidth="120.0" text="Thành tiền" />
+                <TableColumn fx:id="ngayLapColumn" prefWidth="120.0" text="Ngày Lập" />
+                <TableColumn fx:id="soLuongColumn" prefWidth="80.0" text="Số lượng" />
+                <TableColumn fx:id="tongTienColumn" prefWidth="120.0" text="Tổng tiền" />
+                <TableColumn fx:id="trangThaiColumn" prefWidth="100.0" text="Trạng thái" />
+            </columns>
+            <columnResizePolicy>
+                <!-- Điều chỉnh chính sách resize cột nếu cần -->
+                <!-- <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /> -->
+            </columnResizePolicy>
+            <!-- Placeholder nếu bảng rỗng -->
+            <placeholder>
+                <Label text="Không có hóa đơn nào để hiển thị." />
+            </placeholder>
+        </TableView>
+    </children>
+</VBox>

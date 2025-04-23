@@ -31,7 +31,7 @@ public class TestCRUD {
         String ngaySinh = "2004-04-11";
         nv.setNgaySinh(ngaySinh);
 
-        GioiTinh gioiTinh = GioiTinh.Nam;
+        GioiTinh gioiTinh = GioiTinh.NAM;
         nv.setGioiTinh(gioiTinh);
         String soDienThoai = "0901234567";
         nv.setSoDienThoai(soDienThoai);
@@ -71,4 +71,5 @@ public class TestCRUD {
         em.close();
     }
     }
+
 
