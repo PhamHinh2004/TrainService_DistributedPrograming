@@ -19,7 +19,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <children>
-        <!-- Tiêu đề trang -->
+        <!-- Tiêu đề nhomQuyen -->
         <Label text="Danh Sách Hóa Đơn">
             <font>
                 <Font name="System Bold" size="24.0" />
