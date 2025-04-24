@@ -5,15 +5,16 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class NhaGa {
     @Id
+    @EqualsAndHashCode.Include
     private String maNhaGa;
 
     private String tenNhaGa;

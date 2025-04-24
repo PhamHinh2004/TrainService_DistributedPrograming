@@ -14,7 +14,7 @@ import Enum.TrangThaiNhanVien;
 @AllArgsConstructor
 @Getter
 @Setter
-
+@ToString
 public class NhanVien {
 
     @Id

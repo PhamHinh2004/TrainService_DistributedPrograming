@@ -11,13 +11,15 @@ import Enum.TrangThaiTau;
 import javax.xml.namespace.QName;
 
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Tau {
     @Id
+    @EqualsAndHashCode.Include
     private String soHieu;
 
     private int soluongToa;

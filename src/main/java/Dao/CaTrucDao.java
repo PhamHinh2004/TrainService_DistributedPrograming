@@ -1,89 +1,60 @@
 package Dao;
 
 import Model.CaTruc;
+import Model.LichTrinh;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.Persistence;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class CaTrucDao {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
-
-    public void themCaTruc(CaTruc caTruc) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.persist(caTruc);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
+public class CaTrucDao extends GenericDAO<CaTruc, String> {
+    public CaTrucDao(Class<CaTruc> clazz) {
+        super(clazz);
     }
 
-    public CaTruc timCaTrucTheoID(String maCaTruc) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.find(CaTruc.class, maCaTruc);
-        } finally {
-            em.close();
-        }
+    public CaTrucDao(EntityManager em, Class<CaTruc> clazz) {
+        super(em, clazz);
     }
 
-    public List<CaTruc> tatCaCaTruc() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.createQuery("SELECT c FROM CaTruc c", CaTruc.class).getResultList();
-        } finally {
-            em.close();
-        }
-    }
+    public static void main(String[] args) {
+        CaTrucDao caTrucDao = new CaTrucDao(CaTruc.class);
 
-    public void capNhatCaTruc(CaTruc caTruc) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.merge(caTruc);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-    }
+        // test find
+//        CaTruc caTruc = caTrucDao.findById("CT005");
+//        System.out.println(caTruc);
 
-    public void XoaCaTruc(String maCaTruc) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            CaTruc caTruc = em.find(CaTruc.class, maCaTruc);
-            if (caTruc != null) {
-                em.remove(caTruc);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
-    }
-    public List<CaTruc> findByNhanVienId(String nhanVienId) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.createQuery("SELECT c FROM CaTruc c WHERE c.nhanvien.maNhanVien = :nhanVienId", CaTruc.class)
-                    .setParameter("nhanVienId", nhanVienId)
-                    .getResultList();
-        } finally {
-            em.close();
-        }
+        // test save
+        CaTruc caTrucNew = new CaTruc();
+
+        caTrucNew.setMaCaTruc("CT005"); // Gán giá trị thủ công cho maCaTruc
+        caTrucNew.setNgayGioBatDau(LocalDateTime.of(2025, 4, 27, 8, 0));
+        caTrucNew.setNgayGioKetThuc(LocalDateTime.of(2025, 4, 27, 16, 0));
+        caTrucNew.setTongHoaDon(12);
+        caTrucNew.setTongTienCaTruoc(6000000.0);
+        caTrucNew.setTongKetHoaDon(5800000.0);
+        caTrucNew.setTongKetThucThu(5750000.0);
+        caTrucNew.setThatThoat(30000.0);
+//
+//        if(caTrucDao.save(caTrucNew))
+//            System.out.println(caTrucDao.findById("CT005"));
+//        else System.out.println("Them khong thanh cong");
+
+        // test update
+//        caTrucNew.setTongHoaDon(100);
+//        if (caTrucDao.update(caTrucNew))
+//            System.out.println(caTrucDao.findById("CT005"));
+//        else
+//            System.out.println("cap nhat khong thanh cong");
+
+        // test delete
+//        if(caTrucDao.delete("CT005"))
+//            System.out.println(caTrucDao.findById("CT005"));
+//        else
+//            System.out.println("Xoa khong thanh cong");
+
+        // test getAll
+        List<CaTruc> list = caTrucDao.getAll();
+        list.forEach(System.out::println);
     }
 }

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Setter
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class KhachHang {
     @Id
     @EqualsAndHashCode.Include
