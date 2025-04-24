@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.time.Year; // For getting current year
 
-public class ThongKeController implements Initializable {
+public class ThongKeDoanhThuNhanVienController implements Initializable {
 
     @FXML
     private ComboBox<Integer> cbYear;
