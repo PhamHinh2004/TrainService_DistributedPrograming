@@ -6,7 +6,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
@@ -30,7 +29,7 @@ public class CaTruc {
     // ==========================================
     @ManyToOne
     @JoinColumn(name = "maNhanVien")
-    private NhanVien nhanvien;
+    private NhanVien nhanVien;
 
 }
 

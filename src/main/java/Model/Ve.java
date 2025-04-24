@@ -21,8 +21,8 @@ public class Ve {
     @EqualsAndHashCode.Include
     private String maVe;
 
-    private String maKhachHang;
-    private String maHoaDon;
+//    private String maKhachHang;
+//    private String maHoaDon;
 
     @Enumerated(EnumType.STRING)
     private LoaiVe loaiVe;
@@ -38,8 +38,14 @@ public class Ve {
 
     // =================================
     @ManyToOne
-    @JoinColumn(name = "ghe_id")
+    @JoinColumn(name = "maHoaDon")
+    private HoaDon hoaDon;
+
+    @ManyToOne
+    @JoinColumn(name = "maKhachHang")
+    private KhachHang khachHang;
+
+    @ManyToOne
+    @JoinColumn(name = "maGhe")
     private Ghe ghe;
-
-
 }

@@ -26,11 +26,9 @@ public class Toa {
 
 // ======================================
     @OneToMany(mappedBy = "toa")
-    @ToString.Exclude
-    Set<Ghe> ghe;
-
+    private Set<Ghe> dsGhe;
 
     @ManyToOne
-    @JoinColumn(name = "toa_id")
+    @JoinColumn(name = "soHieu")
     private Tau tau;
 }

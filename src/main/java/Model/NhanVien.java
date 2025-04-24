@@ -8,7 +8,6 @@ import java.util.Set;
 import Enum.GioiTinh;
 import Enum.TrangThaiNhanVien;
 
-@Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
@@ -37,13 +36,13 @@ public class NhanVien {
 
 
     // ======================================
-    @OneToMany(mappedBy = "nhanvien", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<CaTruc> catruc;
+    @OneToMany(mappedBy = "nhanVien")
+    private Set<CaTruc> dsCaTruc;
 
-    @OneToOne(mappedBy = "nhanvien", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "nhanVien")
     private TaiKhoan taikhoan;
 
     @OneToMany(mappedBy = "nhanVien")
-    private Set<HoaDon> hoaDons;
+    private Set<HoaDon> dsHoaDon;
 
 }

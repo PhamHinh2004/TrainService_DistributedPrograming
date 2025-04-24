@@ -8,7 +8,8 @@ import java.util.Set;
 
 import Enum.TrangThaiTau;
 
-@Data
+import javax.xml.namespace.QName;
+
 @Entity
 @Table
 @NoArgsConstructor
@@ -29,10 +30,8 @@ public class Tau {
 
 // ============================
     @OneToMany(mappedBy = "tau")
-    @ToString.Exclude
-    private Set<Toa> toas;
+    private Set<Toa> dsToa;
 
     @OneToMany(mappedBy = "tau")
-    @ToString.Exclude
-    private Set<LichTrinh> lichCapBenGases;
+    private Set<LichTrinh> dsLichTrinh;
 }

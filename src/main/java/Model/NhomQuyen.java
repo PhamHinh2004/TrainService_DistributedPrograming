@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
@@ -21,14 +20,14 @@ public class NhomQuyen {
     private String moTa;
 
     // =========================================
-    @ManyToOne
-    @JoinColumn(name = "taikhoan", referencedColumnName = "taikhoan", nullable = false)
-    private TaiKhoan taikhoan;
+   @OneToMany (mappedBy = "nhomQuyen")
+    private Set<TaiKhoan> dsTaiKhoan;
 
     @ManyToMany
     @JoinTable(
-            name = "trang_quyen",
-            joinColumns = @JoinColumn(name = "nhomquyen_id"),
-            inverseJoinColumns = @JoinColumn(name = "nhomquyen_id"))
-    private Set<Quyen> quyen;
+        name = "NhomQuyen_Quyen",
+        joinColumns = @JoinColumn(name = "maNhomQuyen"),
+        inverseJoinColumns = @JoinColumn(name = "maQuyen")
+    )
+    private Set<Quyen> dsQuyen;
 }
