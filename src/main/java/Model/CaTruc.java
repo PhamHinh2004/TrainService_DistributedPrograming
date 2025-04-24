@@ -12,6 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CaTruc {
     @Id
     @EqualsAndHashCode.Include
@@ -20,6 +21,7 @@ public class CaTruc {
     private LocalDateTime ngayGioBatDau;
     private LocalDateTime ngayGioKetThuc;
     private int tongHoaDon;
+    private int tongSoVeBan;
     private double tongTienCaTruoc;
     private double tongKetHoaDon;
     private double tongKetThucThu;

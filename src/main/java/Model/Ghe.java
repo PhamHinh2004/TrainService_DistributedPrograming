@@ -8,13 +8,15 @@ import java.util.Set;
 import Enum.LoaiDichVu;
 
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Ghe {
     @Id
+    @EqualsAndHashCode.Include
     private String maGhe;
     private String viTriGhe;
 
@@ -30,8 +32,4 @@ public class Ghe {
     @JoinColumn(name = "maToa")
     private Toa toa;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMaGhe());
-    }
 }

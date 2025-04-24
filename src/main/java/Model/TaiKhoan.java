@@ -12,6 +12,7 @@ import Enum.TrangThaiTaiKhoan;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class TaiKhoan {
     @Id
     @EqualsAndHashCode.Include

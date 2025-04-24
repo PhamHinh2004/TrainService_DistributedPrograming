@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class NhomQuyen {
     @Id
     @EqualsAndHashCode.Include

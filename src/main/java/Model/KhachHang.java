@@ -8,12 +8,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Setter
-@Getter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class KhachHang {
     @Id
     @EqualsAndHashCode.Include
@@ -28,7 +28,6 @@ public class KhachHang {
 
     private String CCCD;
 
-    // =====================
     @OneToMany(mappedBy = "khachHang")
     private Set<Ve> dsVe;
     // This constructor matches the signature you want to call

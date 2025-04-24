@@ -1,6 +1,5 @@
 package Test;
 
-import Dao.VeDao;
 import Model.Ve;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
