@@ -23,6 +23,7 @@ public class CaTruc {
     private int tongHoaDon;
     private int tongSoVeBan;
     private double tongTienCaTruoc;
+    private double tongSoTienTraLai;
     private double tongKetHoaDon;
     private double tongKetThucThu;
     private double thatThoat;
