@@ -12,12 +12,12 @@ import Enum.TrangThaiHoaDon;
 import Enum.LoaiHoaDon;
 
 @Entity
-@Setter
-@Getter
-@ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class HoaDon {
     @Id
     @EqualsAndHashCode.Include

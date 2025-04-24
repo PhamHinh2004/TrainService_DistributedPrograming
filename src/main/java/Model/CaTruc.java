@@ -12,6 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CaTruc {
     @Id
     @EqualsAndHashCode.Include

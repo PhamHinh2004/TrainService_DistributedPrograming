@@ -9,13 +9,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class LichTrinh {
     @Id
+    @EqualsAndHashCode.Include
     private String maLichTrinh;
 
     private LocalDate ngayKhoiHanh;

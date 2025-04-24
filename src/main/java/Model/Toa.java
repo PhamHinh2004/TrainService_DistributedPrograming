@@ -6,15 +6,16 @@ import lombok.*;
 import java.util.Set;
 import Enum.LoaiDichVu;
 
-@Data
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Toa {
     @Id
+    @EqualsAndHashCode.Include
     private String maToa;
 
     private String tenToa;

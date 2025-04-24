@@ -10,12 +10,12 @@ import Enum.LoaiVe;
 import Enum.TrangThaiVe;
 
 @Entity
-@Setter
-@Getter
-@ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Ve {
     @Id
     @EqualsAndHashCode.Include
