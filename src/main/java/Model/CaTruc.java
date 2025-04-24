@@ -21,6 +21,7 @@ public class CaTruc {
     private LocalDateTime ngayGioBatDau;
     private LocalDateTime ngayGioKetThuc;
     private int tongHoaDon;
+    private int tongSoVeBan;
     private double tongTienCaTruoc;
     private double tongKetHoaDon;
     private double tongKetThucThu;
