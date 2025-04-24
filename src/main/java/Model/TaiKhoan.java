@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.Set;
 import Enum.TrangThaiTaiKhoan;
 
-@Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
@@ -26,9 +25,10 @@ public class TaiKhoan {
 
     // ===============================
     @OneToOne
-    @JoinColumn(name = "nhanvien", referencedColumnName = "nhanvien", nullable = false)
-    private NhanVien nhanvien;
+    @JoinColumn(name = "nhanVien")
+    private NhanVien nhanVien;
 
-    @OneToMany(mappedBy = "taikhoan", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<NhomQuyen> nhomQuyen;
+    @ManyToOne
+    @JoinColumn(name = "maNhomQuyen")
+    private NhomQuyen nhomQuyen;
 }

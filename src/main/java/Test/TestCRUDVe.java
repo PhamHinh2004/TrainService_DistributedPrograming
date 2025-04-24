@@ -12,8 +12,12 @@ import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestCRUDVe {
+
 //    public static void main(String[] args) {
 //
+
+    public static void main(String[] args) {
+
 //        EntityManager em = Persistence.createEntityManagerFactory("default")
 //                .createEntityManager();
 //
@@ -62,5 +66,9 @@ public class TestCRUDVe {
 //        } else {
 //            System.out.println("Vé không tồn tại!");
 //        }
+
 //    }
+
+    }
+
 }

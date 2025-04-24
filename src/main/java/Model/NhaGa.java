@@ -26,6 +26,5 @@ public class NhaGa {
 
     // ================================
     @OneToMany(mappedBy = "nhaGa")
-    @ToString.Exclude
-    Set<LichTrinh> lichCapBenGases;
+    private Set<LichTrinh> dsLichTrinh;
 }

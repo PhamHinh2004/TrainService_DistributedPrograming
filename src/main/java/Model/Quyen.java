@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class Quyen {
     private String tenQuyen;
 
 // =======================================
-    @ManyToMany(mappedBy = "quyen")
-    private Set<NhomQuyen> nhomQuyen;
+    @ManyToMany(mappedBy = "dsQuyen")
+    private Set<NhomQuyen> dsNhomQuyen;
 
 }

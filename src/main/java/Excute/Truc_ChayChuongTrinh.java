@@ -9,7 +9,11 @@ import Enum.GioiTinh;
 import java.time.LocalDate;
 
 public class Truc_ChayChuongTrinh {
+
     public static void main(String[] args) {
+
+//    public static void main(String[] args) {
+
 //        HoaDon hoaDon1 = new HoaDon();
 //        hoaDon1.setMaHoaDon("HD001");
 //        hoaDon1.setNgayLapHoaDon(LocalDate.of(2025, 1, 16));
@@ -76,4 +80,5 @@ public class Truc_ChayChuongTrinh {
 //
 //        em.close();
     }
+
 }

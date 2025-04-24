@@ -3,11 +3,11 @@ package Model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import javax.xml.namespace.QName;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Data
 @Entity
 @Table
 @NoArgsConstructor
@@ -27,10 +27,10 @@ public class LichTrinh {
 
     // ================================
     @ManyToOne
-    @JoinColumn(name = "tau_id")
+    @JoinColumn(name = "soHieu")
     private Tau tau;
 
     @ManyToOne
-    @JoinColumn(name = "nhaga_id")
+    @JoinColumn(name = "maNhaGa")
     private NhaGa nhaGa;
 }

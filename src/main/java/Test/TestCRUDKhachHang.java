@@ -22,7 +22,7 @@ public class TestCRUDKhachHang {
 
         KhachHangDao khachHangDao = new KhachHangDao(em);
 
-        KhachHang khachHang = new KhachHang();
+        KhachHang khachHang = new KhachHang("KH001", "Nguyễn Văn A", "0900000001", "a.nguyen@example.com", GioiTinh.NAM, "111111111111");
         khachHang.setMaKhachHang(faker.idNumber().valid());
         khachHang.setTenKhachHang(faker.name().fullName());
         khachHang.setSoDienThoai("0" + faker.number().digits(9));
