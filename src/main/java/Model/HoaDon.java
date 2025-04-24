@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
 import Enum.TrangThaiHoaDon;
 import Enum.LoaiHoaDon;
 
@@ -39,7 +41,11 @@ public class HoaDon {
 
 // =======================================
     @ManyToOne
-    @JoinColumn(name = "nhanvien_id")
+    @JoinColumn(name = "maNhanVien")
     private NhanVien nhanVien;
+
+    @OneToMany(mappedBy = "hoaDon")
+    private Set<Ve> dsVe;
+
 
 }

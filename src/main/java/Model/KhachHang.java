@@ -6,6 +6,7 @@ import Enum.GioiTinh;
 import org.checkerframework.checker.units.qual.N;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -27,5 +28,9 @@ public class KhachHang {
     private GioiTinh gioiTinh;
 
     private String CCCD;
+
+    // =====================
+    @OneToMany(mappedBy = "khachHang")
+    private Set<Ve> dsVe;
 
 }

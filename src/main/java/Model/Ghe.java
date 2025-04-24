@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 import Enum.LoaiDichVu;
 
-@Data
 @Entity
 @Table
 @NoArgsConstructor
@@ -24,18 +23,12 @@ public class Ghe {
 
 
 // ================================
-    @ManyToOne
-    @JoinColumn(name = "toa_id")
-    private Toa toa;
+    @OneToMany (mappedBy = "ghe")
+    private Set<Ve> dsVe;
 
-    @OneToMany(mappedBy = "ghe")
-    private  Set<Ve> ves;
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Ghe ghe)) return false;
-        return Objects.equals(getMaGhe(), ghe.getMaGhe());
-    }
+    @ManyToOne
+    @JoinColumn(name = "maToa")
+    private Toa toa;
 
     @Override
     public int hashCode() {
