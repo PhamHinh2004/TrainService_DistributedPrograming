@@ -66,6 +66,9 @@ dependencies {
   // Data Faker
   implementation 'net.datafaker:datafaker:2.3.0'
 
+  // Mã hóa
+  implementation 'org.mindrot:jbcrypt:0.4'
+
   // JUnit 5
   testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
