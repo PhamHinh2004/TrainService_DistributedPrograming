@@ -2,6 +2,8 @@ package Service;
 
 import Model.NhanVien;
 
-public interface NhanVienService extends GenericService<NhanVien, String>{
+import java.rmi.RemoteException;
 
+public interface NhanVienService extends GenericService<NhanVien, String>{
+    boolean xoaNhanVien(String id) throws RemoteException;
 }
