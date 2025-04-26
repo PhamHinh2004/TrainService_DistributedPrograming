@@ -1,22 +1,27 @@
-package Controller; // Đảm bảo package này khớp với cấu trúc dự án của bạn
+package Controller;
 
+import Model.NhanVien; // Import NhanVien model
+import Model.NhomQuyen; // Import NhomQuyen
+// Import other necessary classes
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader; // Import FXMLLoader để tải FXML khác
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent; // Import Parent (kiểu trả về khi tải FXML)
-import javafx.scene.Scene; // Cần cho việc đóng cửa sổ
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane; // contentArea là StackPane
-import javafx.scene.layout.VBox; // Dùng để tạo nội dung tạm hoặc hiển thị lỗi
-import javafx.stage.Stage; // Cần cho việc đóng cửa sổ
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import java.io.IOException; // Import IOException để xử lý lỗi khi tải FXML
+import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.HashMap; // Dùng Map để quản lý dễ hơn
-import java.util.Map;   // Dùng Map để quản lý dễ hơn
 
 public class MainController implements Initializable {
 
@@ -26,152 +31,352 @@ public class MainController implements Initializable {
     @FXML
     private StackPane contentArea; // Khu vực này sẽ hiển thị nội dung của các trang khác
 
+    // User info button and labels
+    @FXML
+    private Button btnUserInfo;
+    @FXML
+    private Label lblUserName; // fx:id="lblUserName"
+    @FXML
+    private Label lblUserId;  // fx:id="lblUserId"
+
+    // Standard buttons
     @FXML
     private Button btnDatVe;
-
     @FXML
     private Button btnQuanLyVe;
-
     @FXML
     private Button btnQuanLyHoaDon;
-
     @FXML
     private Button btnQuanLyKhachHang;
-
     @FXML
-    private Button btnQuanLyNhanVien;
-
-    @FXML
-    private Button btnThongKe;
-
+    private Button btnQuanLyNhanVien; // Manager only
     @FXML
     private Button btnDangXuat;
+    @FXML
+    private Button btnQuanLyCaTruc; // Manager only
 
-    // Map để ánh xạ nút với đường dẫn FXML tương ứng
-    // Lưu ý: Đảm bảo đường dẫn này đúng với vị trí file FXML của bạn trong classpath
-    // (Ví dụ: nếu file FXML nằm trong src/main/resources/View/ thì đường dẫn sẽ là "/View/...")
-    private final Map<Button, String> fxmlMap = new HashMap<>();
+
+    // MenuButton and MenuItems for ThongKe (Manager only)
+    @FXML
+    private MenuButton mbThongKe;
+    @FXML
+    private MenuItem miThongKeNhaGa;
+    @FXML
+    private MenuItem miThongKeNhanVien;
+
+
+    // Map to map Buttons to FXML paths (excluding user info and logout)
+    private final Map<Button, String> fxmlButtonMap = new HashMap<>();
+    // MenuItems are handled separately
+
+    // Keep track of the logged-in user and their role
+    private NhanVien loggedInUser;
+    private NhomQuyen loggedInUserRole; // Store the user's role
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Ánh xạ các nút với đường dẫn file FXML của trang tương ứng
-        // Bạn cần tạo các file FXML này, ví dụ: HomeView.fxml, DatVeView.fxml, ...
-        fxmlMap.put(btnDatVe, "/View/DatVeView.fxml");
-        fxmlMap.put(btnQuanLyVe, "/View/QuanLyVeView.fxml");
-        fxmlMap.put(btnQuanLyHoaDon, "/View/QuanLyHoaDonView.fxml");
-        fxmlMap.put(btnQuanLyKhachHang, "/View/QuanLyKhachHangView.fxml");
-        fxmlMap.put(btnQuanLyNhanVien, "/View/QuanLyNhanVienView.fxml");
-        fxmlMap.put(btnThongKe, "/View/ThongKeView.fxml");
-        // Nút đăng xuất có logic riêng, không tải FXML
+        // Map the standard buttons to their FXML paths
+        fxmlButtonMap.put(btnDatVe, "/View/DatVeView.fxml");
+        fxmlButtonMap.put(btnQuanLyVe, "/View/QuanLyVeView.fxml");
+        fxmlButtonMap.put(btnQuanLyHoaDon, "/View/QuanLyHoaDonView.fxml");
+        fxmlButtonMap.put(btnQuanLyKhachHang, "/View/QuanLyKhachHangView.fxml");
+        // Manager-specific buttons will be added to the map if they exist in FXML
+        // We check for null below before putting them in the map
+        if (btnQuanLyNhanVien != null) fxmlButtonMap.put(btnQuanLyNhanVien, "/View/QuanLyNhanVienView.fxml");
+        if (btnQuanLyCaTruc != null) fxmlButtonMap.put(btnQuanLyCaTruc, "/View/QuanLyCaTrucView.fxml");
 
-        // Tải và hiển thị trang chủ ban đầu
-        // Thay thế cho showHomePage() cũ
-        loadContent("/View/HomePageView.fxml"); // Giả sử bạn có file HomeView.fxml
 
-        // Thiết lập các sự kiện cho các nút
-        setupButtonHandlers();
+        // Note: UI visibility and initial page loading will happen after user is set in setLoggedInUser()
 
-        // Thiết lập hiệu ứng hover cho các nút
-        // Giữ nguyên phần này như yêu cầu của bạn
-        setupHoverEffect(btnDatVe);
-        setupHoverEffect(btnQuanLyVe);
-        setupHoverEffect(btnQuanLyHoaDon);
-        setupHoverEffect(btnQuanLyKhachHang);
-        setupHoverEffect(btnQuanLyNhanVien);
-        setupHoverEffect(btnThongKe);
-        setupHoverEffect(btnDangXuat);
+        // Setup handlers for buttons and menu items
+        setupHandlers();
+
+        // Setup hover effects for all potentially visible buttons
+        // Pass all button references, null ones will be ignored by the helper
+        setupHoverEffects(btnDatVe, btnQuanLyVe, btnQuanLyHoaDon,
+                btnQuanLyKhachHang, btnQuanLyNhanVien, btnQuanLyCaTruc,
+                btnDangXuat, btnUserInfo); // Add btnUserInfo here
+        // mbThongKe hover styling is usually handled by CSS or default JavaFX
     }
 
-    // Phương thức để tải nội dung từ file FXML và hiển thị trong contentArea
+    // Called by LoginController after successful login
+    public void setLoggedInUser(NhanVien user, NhomQuyen role) {
+        this.loggedInUser = user;
+        this.loggedInUserRole = role; // Store the role
+        System.out.println("MainController received user: " + (user != null ? user.getTenNhanVien() : "null") + " (" + (user != null ? user.getChucVu() : "null") + "), Role: " + (role != null ? role.getTenNhomQuyen() : "null"));
+
+        // Update the user info display in the sidebar
+        if (user != null) {
+            // Assuming lblUserName and lblUserId fx:ids are added to MainView.fxml and are not null
+            if (lblUserName != null) lblUserName.setText(user.getTenNhanVien() != null ? user.getTenNhanVien() : "N/A");
+            if (lblUserId != null) lblUserId.setText(user.getMaNhanVien() != null ? user.getMaNhanVien() : "N/A");
+
+            // --- SET ACTION FOR USER INFO BUTTON BASED ON ROLE ---
+            if (btnUserInfo != null) {
+                btnUserInfo.setOnAction(event -> {
+                    if (this.loggedInUser != null) {
+                        System.out.println("User info button clicked. User role: " + this.loggedInUserRole.getTenNhomQuyen());
+                        if ("Quản lý".equals(this.loggedInUserRole.getTenNhomQuyen())) {
+                            // Load UserInfoView and pass data for Managers
+                            showUserInfoPage(this.loggedInUser); // Calling the method below
+                        } else {
+                            // Load HomePageView for other roles (e.g., "Nhân viên")
+                            loadContent("/View/HomePageView.fxml");
+                        }
+                    } else {
+                        // Fallback if loggedInUser is somehow null here
+                        loadContent("/View/HomePageView.fxml"); // Load default page
+                    }
+                });
+            }
+
+        } else {
+            // Handle case where user is null (should ideally not happen after successful login)
+            if (lblUserName != null) lblUserName.setText("Unknown User");
+            if (lblUserId != null) lblUserId.setText("");
+            if (btnUserInfo != null) btnUserInfo.setOnAction(null); // Disable button
+            System.err.println("Error: Logged in user is null in setLoggedInUser.");
+        }
+
+        // Adjust UI visibility based on role
+        adjustUIVisibility();
+
+        // --- Load the initial page based on role AFTER visibility is adjusted ---
+        // This overrides the default loadContent in initialize if set there
+        if (loggedInUserRole != null) {
+            if ("Quản lý".equals(loggedInUserRole.getTenNhomQuyen())) {
+                // Managers might land on their info page or another default
+                // Let's have managers land on the QuanLyNhanVienView initially as per requirement
+                loadContent("/View/QuanLyNhanVienView.fxml");
+            } else {
+                // Other roles land on the homepage
+                loadContent("/View/HomePageView.fxml");
+            }
+        } else {
+            // Fallback if somehow user is null
+            loadContent("/View/HomePageView.fxml"); // Load default if no user info
+        }
+    }
+
+    private void adjustUIVisibility() {
+        // Determine if the logged-in user is a Manager
+        boolean isManager = loggedInUserRole != null && "Quản lý".equals(loggedInUserRole.getTenNhomQuyen());
+        System.out.println("Adjusting UI for role: " + (isManager ? "Manager" : "Employee/Other"));
+
+
+        // --- Apply visibility for Manager-specific items ---
+        // Use the specific helper for Buttons
+        setButtonVisibility(isManager, btnQuanLyNhanVien, btnQuanLyCaTruc);
+        // Use the specific helper for MenuButtons
+        setButtonVisibility(isManager, mbThongKe);
+
+
+        // --- Apply visibility for items visible to ALL roles (or non-managers) ---
+        // These buttons are visible to both roles in this example
+        setButtonVisibility(true, btnDangXuat, btnUserInfo);
+
+        // Assuming these are visible only to non-managers based on the structure above
+        setButtonVisibility(!isManager, btnDatVe, btnQuanLyVe, btnQuanLyHoaDon, btnQuanLyKhachHang);
+
+        // Note: MenuItems inside mbThongKe will inherit visibility from mbThongKe
+    }
+
+    // Helper method to set visibility and managed property for Button... varargs
+    private void setButtonVisibility(boolean visible, Button... buttons) {
+        for (Button button : buttons) {
+            if (button != null) { // Check if the FXML element was injected
+                button.setVisible(visible);
+                button.setManaged(visible); // Remove from layout if not visible
+            } else {
+                // Log a warning if an FXML button is missing unexpectedly
+                // System.err.println("Warning: Attempted to set visibility on a null Button reference.");
+            }
+        }
+    }
+
+    // Helper method to set visibility and managed property for MenuButton... varargs
+    private void setButtonVisibility(boolean visible, MenuButton... buttons) {
+        for (MenuButton button : buttons) {
+            if (button != null) { // Check if the FXML element was injected
+                button.setVisible(visible);
+                button.setManaged(visible); // Remove from layout if not visible
+            } else {
+                // Log a warning if an FXML MenuButton is missing unexpectedly
+                // System.err.println("Warning: Attempted to set visibility on a null MenuButton reference.");
+            }
+        }
+    }
+
     private void loadContent(String fxmlPath) {
+        System.out.println("Loading content: " + fxmlPath);
         try {
-            // Lấy URL của file FXML từ classpath
             URL fxmlUrl = getClass().getResource(fxmlPath);
             if (fxmlUrl == null) {
                 System.err.println("Không tìm thấy file FXML: " + fxmlPath);
-                // Hiển thị thông báo lỗi trên giao diện nếu không tìm thấy file
                 displayError("Không tìm thấy file: " + fxmlPath);
                 return;
             }
 
-            // Tải nội dung FXML
-            Parent content = FXMLLoader.load(fxmlUrl);
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent content = loader.load();
 
-            // Xóa nội dung hiện tại trong contentArea
+            // --- OPTIONAL: Pass loggedInUser to content controllers ---
+            // If your loaded views need the logged-in user (e.g., for filtering data)
+            // you can try to get their controller and pass the user.
+            // This requires the controllers of the loaded FXMLs to
+            Object controller = loader.getController(); // Get the controller here
+
+            // Example check if controller implements a specific interface
+            // if (controller instanceof UserAwareController) {
+            //     ((UserAwareController) controller).setLoggedInUser(loggedInUser);
+            // } else
+            if (controller instanceof UserInfoController) {
+                // If loading UserInfoView via loadContent (e.g., directly from a menu,
+                // though our logic uses showUserInfoPage), pass the user.
+                // Note: showUserInfoPage already handles this. This might be redundant
+                // but safer if loadContent is used elsewhere to load user-aware views.
+                ((UserInfoController) controller).setUserInfo(loggedInUser);
+            }
+            // --- END OPTIONAL ---
+
             contentArea.getChildren().clear();
-            // Thêm nội dung mới được tải vào contentArea
             contentArea.getChildren().add(content);
 
         } catch (IOException e) {
             e.printStackTrace();
-            // Xử lý lỗi khi tải FXML (ví dụ: cú pháp FXML sai)
-            // Hiển thị thông báo lỗi trên giao diện
             displayError("Lỗi khi tải trang: " + fxmlPath + "\nChi tiết: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            // Bắt các lỗi khác có thể xảy ra trong quá trình tải/hiển thị
             displayError("Đã xảy ra lỗi: " + e.getMessage());
         }
     }
 
     // Phương thức hiển thị lỗi trong content area nếu có vấn đề
     private void displayError(String message) {
-        contentArea.getChildren().clear(); // Xóa nội dung cũ
+        contentArea.getChildren().clear();
         Label errorLabel = new Label("Lỗi: " + message);
         errorLabel.setStyle("-fx-text-fill: red; -fx-font-size: 16px;");
         VBox errorBox = new VBox(errorLabel);
-        errorBox.setStyle("-fx-alignment: center;"); // Căn giữa thông báo lỗi
+        errorBox.setStyle("-fx-alignment: center;");
         contentArea.getChildren().add(errorBox);
     }
 
 
-    private void setupButtonHandlers() {
-        // Thiết lập sự kiện OnAction cho các nút sử dụng Map
-        // Thay thế các lệnh btnX.setOnAction(e -> showPage("...")) cũ
-        fxmlMap.forEach((button, fxmlPath) -> {
-            button.setOnAction(event -> loadContent(fxmlPath));
+    // Keep your setupHandlers method
+    private void setupHandlers() {
+        // Setup handlers for standard Buttons using the map
+        // The map only contains buttons we expect to load FXML content
+        fxmlButtonMap.forEach((button, fxmlPath) -> {
+            if (button != null) {
+                button.setOnAction(event -> loadContent(fxmlPath));
+            }
         });
 
-        // Thiết lập sự kiện cho nút Đăng xuất riêng
-        btnDangXuat.setOnAction(event -> handleLogout());
+        // Setup handlers for MenuItems
+        if (mbThongKe != null) { // Check if MenuButton exists in FXML
+            if (miThongKeNhaGa != null) { // Check if MenuItem exists in FXML
+                miThongKeNhaGa.setOnAction(event -> loadContent("/View/ThongKeDoanhThuNhaGaView.fxml"));
+            }
+            if (miThongKeNhanVien != null) { // Check if MenuItem exists in FXML
+                miThongKeNhanVien.setOnAction(event -> loadContent("/View/ThongKeDoanhThuNhanVienView.fxml")); // Or your specific employee stats view
+            }
+        }
+
+        // Setup handler for the Logout button
+        if (btnDangXuat != null) { // Check if button exists
+            btnDangXuat.setOnAction(event -> handleLogout());
+        }
+
+        // btnUserInfo handler is set in setLoggedInUser based on role
+        // No need to set it here initially with a default page load action
     }
 
-    // Giữ nguyên hiệu ứng hover như code cũ của bạn
-    private void setupHoverEffect(Button button) {
-        button.setOnMouseEntered(e ->
-                button.setStyle("-fx-background-color: #0052a3;") // Màu khi hover
-        );
+    // Modified setupHoverEffect to accept multiple buttons
+    private void setupHoverEffects(Button... buttons) {
+        for (Button button : buttons) {
+            if (button != null) {
+                button.setOnMouseEntered(e ->
+                        button.setStyle("-fx-background-color: #0052a3;") // Màu khi hover
+                );
 
-        button.setOnMouseExited(e -> {
-            // Trở lại màu nền trong suốt khi không hover
-            // Nếu bạn muốn một nút nào đó giữ màu khi đang active, cần thêm logic kiểm tra tại đây
-            button.setStyle("-fx-background-color: transparent;");
-        });
+                button.setOnMouseExited(e -> {
+                    button.setStyle("-fx-background-color: transparent;");
+                });
+            }
+        }
+        // Need to handle MenuButton hover separately, likely via CSS
     }
 
-    // Placeholder cho logic đăng xuất
-    // Thay thế System.out.println("Đăng xuất") cũ
+    // Placeholder for logout logic
     private void handleLogout() {
         System.out.println("Đang đăng xuất...");
-        // Thực hiện logic đăng xuất tại đây, ví dụ: đóng cửa sổ hiện tại
-        // Lấy Stage hiện tại từ một node bất kỳ (ví dụ: mainLayout)
+        // Clear logged in user data (important for security/state management)
+        this.loggedInUser = null;
+        // Implement logout logic (close current stage, open login stage)
         Stage currentStage = (Stage) mainLayout.getScene().getWindow();
         currentStage.close();
 
-     //    Tùy chọn: Mở lại cửa sổ đăng nhập nếu có
-         try {
-             FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/Login.fxml")); // Giả sử có LoginView.fxml
-             Parent loginRoot = loader.load();
-             Stage loginStage = new Stage();
-             loginStage.setScene(new Scene(loginRoot));
-             loginStage.setTitle("Đăng nhập");
-             loginStage.show();
-         } catch (IOException e) {
-             e.printStackTrace();
-             // Xử lý lỗi nếu không mở được cửa sổ đăng nhập
-         }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/Login.fxml"));
+            Parent loginRoot = loader.load();
+            Stage loginStage = new Stage();
+            loginStage.setScene(new Scene(loginRoot));
+            loginStage.setTitle("Đăng nhập");
+            loginStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    // Các phương thức showHomePage() và showPage(String title) cũ đã được loại bỏ
-    // vì logic của chúng đã được thay thế bởi phương thức loadContent(String fxmlPath).
+    // Method to load and display the User Info page specifically for Managers
+    private void showUserInfoPage(NhanVien user) {
+        if (user == null) {
+            System.err.println("Error: Cannot show user info page for null user.");
+            displayError("Không thể hiển thị thông tin cá nhân (dữ liệu trống).");
+            loadContent("/View/HomePageView.fxml"); // Fallback to homepage
+            return;
+        }
+
+        System.out.println("Attempting to load user info page for: " + user.getTenNhanVien());
+        try {
+            URL fxmlUrl = getClass().getResource("/View/UserInfoView.fxml"); // Path to your new FXML
+            if (fxmlUrl == null) {
+                System.err.println("Không tìm thấy file FXML Thông tin cá nhân: /View/UserInfoView.fxml");
+                displayError("Không tìm thấy trang thông tin cá nhân.");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent userInfoPage = loader.load(); // Load the FXML
+
+            // Get the controller AFTER loading
+            UserInfoController userInfoController = loader.getController();
+
+            // Pass the logged-in user data to the UserInfoController
+            if (userInfoController != null) {
+                userInfoController.setUserInfo(user); // Pass the NhanVien object
+                System.out.println("UserInfoController.setUserInfo called successfully.");
+            } else {
+                System.err.println("Error: UserInfoController is null after loading FXML.");
+                displayError("Lỗi tải trang thông tin cá nhân: Không tìm thấy Controller.");
+                // Optionally show the loaded page even if controller is null, it just won't have data
+                // contentArea.getChildren().clear();
+                // contentArea.getChildren().add(userInfoPage);
+                return; // Stop here if controller is null
+            }
+
+            // Display the User Info page in the content area
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(userInfoPage);
+            System.out.println("UserInfoView loaded and displayed.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            displayError("Lỗi khi tải trang thông tin cá nhân: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayError("Đã xảy ra lỗi khi tải trang thông tin cá nhân" + e.getMessage());
+        }
+    }
 }

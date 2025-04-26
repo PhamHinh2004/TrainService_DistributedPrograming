@@ -5,16 +5,18 @@ import lombok.*;
 
 import java.util.Set;
 
-@Data
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class NhaGa {
     @Id
+    @EqualsAndHashCode.Include
     private String maNhaGa;
+
     private String tenNhaGa;
     private String diaChi;
     private String thanhPho;
@@ -23,7 +25,7 @@ public class NhaGa {
     private String diaChiWebSite;
     private int SoThuTuNhaGa;
 
+    // ================================
     @OneToMany(mappedBy = "nhaGa")
-    @ToString.Exclude
-    Set<LichCapBenGa> lichCapBenGas;
+    private Set<LichTrinh> dsLichTrinh;
 }

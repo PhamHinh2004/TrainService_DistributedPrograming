@@ -5,41 +5,31 @@ import lombok.*;
 
 import java.util.Objects;
 import java.util.Set;
-import Enum.LoaiGhe;
+import Enum.LoaiDichVu;
 
-@Data
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Ghe {
     @Id
+    @EqualsAndHashCode.Include
     private String maGhe;
     private String viTriGhe;
-    @Enumerated(EnumType.STRING)
-    private LoaiGhe loaiGhe;
 
-    @OneToMany(mappedBy = "ghe")
-    @ToString.Exclude
-    Set<ChuyenDi> chuyenDis;
+    @Enumerated(EnumType.STRING)
+    private LoaiDichVu loaiGhe;
+
+
+// ================================
+    @OneToMany (mappedBy = "ghe")
+    private Set<Ve> dsVe;
 
     @ManyToOne
-    @JoinColumn(name = "toa_id")
+    @JoinColumn(name = "maToa")
     private Toa toa;
 
-    @OneToMany(mappedBy = "ghe")
-    private  Set<Ve> ves;
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Ghe ghe)) return false;
-        return Objects.equals(getMaGhe(), ghe.getMaGhe());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getMaGhe());
-    }
 }

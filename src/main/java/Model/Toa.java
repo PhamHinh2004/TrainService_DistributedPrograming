@@ -4,24 +4,32 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
+import Enum.LoaiDichVu;
 
-@Data
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Toa {
     @Id
+    @EqualsAndHashCode.Include
     private String maToa;
 
     private String tenToa;
-    private int soLuongGhe;
+
+    @Enumerated(EnumType.STRING)
+    private LoaiDichVu loaToa;
+
+    private int soLuongCho;
+
+// ======================================
     @OneToMany(mappedBy = "toa")
-    @ToString.Exclude
-    Set<Ghe> ghes;
+    private Set<Ghe> dsGhe;
+
     @ManyToOne
-    @JoinColumn(name = "toa_id")
+    @JoinColumn(name = "soHieu")
     private Tau tau;
 }

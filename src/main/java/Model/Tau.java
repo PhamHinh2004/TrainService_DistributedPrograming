@@ -6,25 +6,34 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Data
+import Enum.TrangThaiTau;
+
+import javax.xml.namespace.QName;
+
 @Entity
-@Table
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Tau {
     @Id
+    @EqualsAndHashCode.Include
     private String soHieu;
-    private String soluongToiDa;
+
+    private int soluongToa;
     private String quocGia;
     private String chuSoHuu;
     private LocalDateTime ngayBatDauVanHanh;
+
+    @Enumerated(EnumType.STRING)
+    private TrangThaiTau trangThai;
+
+// ============================
     @OneToMany(mappedBy = "tau")
-    @ToString.Exclude
-    private Set<Toa> toas;
+    private Set<Toa> dsToa;
 
     @OneToMany(mappedBy = "tau")
-    @ToString.Exclude
-    private Set<LichCapBenGa> lichCapBenGas;
+    private Set<LichTrinh> dsLichTrinh;
 }

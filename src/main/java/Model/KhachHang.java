@@ -1,23 +1,24 @@
 package Model;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import Enum.GioiTinh;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Setter
 @ToString
-@EqualsAndHashCode
 public class KhachHang {
     @Id
     @EqualsAndHashCode.Include
     private String maKhachHang;
+
     private String tenKhachHang;
     private String soDienThoai;
     private String email;
@@ -28,17 +29,16 @@ public class KhachHang {
     private String CCCD;
 
     @OneToMany(mappedBy = "khachHang")
-    private List<ChiTietHoaDon> danhSachCTHD;
-
-    public KhachHang() {}
-
-    public KhachHang(String maKhachHang, String tenKhachHang, String soDienThoai, String email, GioiTinh gioiTinh, String CCCD, List<ChiTietHoaDon> danhSachCTHD) {
+    private Set<Ve> dsVe;
+    // This constructor matches the signature you want to call
+    public KhachHang(String maKhachHang, String tenKhachHang, String soDienThoai, String email, GioiTinh gioiTinh, String CCCD) {
         this.maKhachHang = maKhachHang;
         this.tenKhachHang = tenKhachHang;
         this.soDienThoai = soDienThoai;
         this.email = email;
         this.gioiTinh = gioiTinh;
         this.CCCD = CCCD;
-        this.danhSachCTHD = danhSachCTHD;
+        // You must initialize the dsVe collection, as it's not provided in this constructor
+        this.dsVe = new HashSet<>(); // Initialize the Set to an empty HashSet
     }
 }
