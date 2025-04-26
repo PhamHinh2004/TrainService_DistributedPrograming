@@ -1,425 +1,386 @@
 package Controller;
 
-import Model.Ve; // Import Ve model
-import Model.KhachHang; // Import KhachHang model (nested)
-import Enum.LoaiVe; // Import LoaiVe enum
-import Enum.GioiTinh; // Import GioiTinh enum
-import Enum.TrangThaiVe; // Import TrangThaiVe enum
+// DAO Imports - Adjust path as necessary
+import Dao.VeDAO;
+import Dao.KhachHangDAO;
+import Dao.NhaGaDAO;
 
-import javafx.beans.property.SimpleObjectProperty; // Needed for derived properties returning objects
-import javafx.beans.property.SimpleStringProperty; // Needed for derived String properties
+// Model Imports - Adjust path as necessary
+import Model.Ve;
+import Model.KhachHang;
+import Model.NhaGa;
+import Model.Ghe;
+
+// Enum Imports - Adjust path as necessary
+import Enum.LoaiVe;
+import Enum.TrangThaiVe;
+
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList; // For filtering
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*; // Import all control classes
-import javafx.scene.control.cell.PropertyValueFactory; // To link TableColumn to model properties
-import javafx.scene.input.KeyCode; // For handling Enter key
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.util.Callback;
 
 import java.net.URL;
-import java.time.LocalDateTime; // For date/time model fields
-import java.time.format.DateTimeFormatter; // For formatting dates/times
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
-
-
-// Assuming you have these mock classes if needed for deriving data
-// private static class MockGa { String tenGa; MockGa(String t) {tenGa=t;} public String getTenGa() {return tenGa;}}
-// private static class MockChuyenTau { LocalDateTime ngayKhoiHanh; MockChuyenTau(LocalDateTime d) {ngayKhoiHanh=d;} public LocalDateTime getNgayKhoiHanh() {return ngayKhoiHanh;}}
-// private static class MockGheVe { MockGa gaKhoiHanh; MockGa gaKetThuc; MockChuyenTau chuyenTau; MockGheVe(MockGa gh, MockGa gk, MockChuyenTau ct) {gaKhoiHanh=gh; gaKetThuc=gk; chuyenTau=ct;}}
 
 
 public class QuanLyVeController implements Initializable {
 
-    // --- Customer/Ticket Information Section (Display only) ---
-    @FXML private TextField txtMaVe;
-    @FXML private TextField txtMaKhachHang;
-    @FXML private TextField txtHoVaTen;
-    @FXML private TextField txtCccd;
-    @FXML private TextField txtSoDienThoai;
-    @FXML private TextField txtEmail;
-    @FXML private ComboBox<String> cbGioiTinh; // Displaying String
+    // ... (Khai báo DAO và FXML giữ nguyên) ...
+    private VeDAO veDAO = new VeDAO(Ve.class);
+    private KhachHangDAO khachHangDAO = new KhachHangDAO(KhachHang.class);
+    private NhaGaDAO nhaGaDAO = new NhaGaDAO(NhaGa.class);
 
-    // --- Search and Action Buttons ---
+    @FXML private TextField txtHoVaTenKH;
+    @FXML private TextField txtSdtKH;
+    @FXML private TextField txtCccdKH;
+    @FXML private TextField txtEmailKH;
+    @FXML private TextField txtLoaiVe;
+    @FXML private TextField txtViTriGhe;
+    @FXML private TextField txtGaKhoiHanh;
+    @FXML private TextField txtNgayKhoiHanhDisplay;
+    @FXML private TextField txtGiaVe;
+    @FXML private TextField txtToa;
+    @FXML private TextField txtGaDen;
+    @FXML private TextField txtNgayDatDisplay;
+    @FXML private DatePicker dpDateField;
     @FXML private Button btnTimKiem;
-    @FXML private TextField txtTimKiem; // Search field
-    @FXML private Button btnChiTiet;
+    @FXML private TextField txtTimKiem;
+    @FXML private Button btnCapNhat;
     @FXML private Button btnInVe;
     @FXML private Button btnHuyVe;
-    @FXML private Button btnCapNhat; // Update button
+    @FXML private TableView<Ve> ticketTable;
+    @FXML private TableColumn<Ve, Integer> colStt;
+    @FXML private TableColumn<Ve, String> colHoTenKH;
+    @FXML private TableColumn<Ve, String> colGaKhoiHanh;
+    @FXML private TableColumn<Ve, String> colGaDen;
+    @FXML private TableColumn<Ve, LoaiVe> colLoaiVe;
+    @FXML private TableColumn<Ve, Double> colGiaVe;
+    @FXML private TableColumn<Ve, String> colGhe;
+    @FXML private TableColumn<Ve, String> colToa;
 
-
-    // --- Table View ---
-    @FXML private TableView<Ve> ticketTable; // TableView type is Ve
-    @FXML private TableColumn<Ve, Integer> colStt; // STT
-    @FXML private TableColumn<Ve, String> colMaVe; // maVe
-    @FXML private TableColumn<Ve, String> colDiemDi; // Derived/Placeholder
-    @FXML private TableColumn<Ve, String> colDiemDen; // Derived/Placeholder
-    @FXML private TableColumn<Ve, LoaiVe> colDoiTuong; // loaiVe (Enum)
-    @FXML private TableColumn<Ve, Double> colGiaVe; // giaVe
-    @FXML private TableColumn<Ve, LocalDateTime> colNgayDat; // ngayDat (needs formatting)
-    @FXML private TableColumn<Ve, LocalDateTime> colNgayKhoiHanh; // Derived/Placeholder (needs formatting)
-
-
-    // --- Data ---
     private ObservableList<Ve> masterTicketList = FXCollections.observableArrayList();
     private FilteredList<Ve> filteredTicketList;
 
-
-    // --- Date/Time Formatters ---
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // Example combined format
+    private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // Populate Giới tính ComboBox with String values
-        cbGioiTinh.setItems(FXCollections.observableArrayList("Nam", "Nữ", "Khác"));
-
-        // Set up TableView columns
+    public void initialize(URL url, ResourceBundle rb) {
         setupTableColumns();
+        loadDataIntoTable();
 
-        // Load mock data (replace with actual data loading from DB/API)
-        loadMockTicketData();
-
-        // Wrap the ObservableList in a FilteredList (for filtering)
-        filteredTicketList = new FilteredList<>(masterTicketList, p -> true); // Initially show all data
-
-        // Set the filtered data to the TableView
+        filteredTicketList = new FilteredList<>(masterTicketList, p -> true);
         ticketTable.setItems(filteredTicketList);
 
-        // Add listeners and button actions
-        setupListeners();
-        setupButtonActions();
+        setupListeners(); // <- Gọi setupListeners đã được sửa đổi
+        setupButtonActions(); // <- Gọi setupButtonActions đã được sửa đổi
 
-        // Handle row selection in the table
+        clearTicketDetails();
+        if (dpDateField != null) {
+            dpDateField.setValue(LocalDate.now());
+        }
+        // <<< SỬA ĐỔI: Gọi hàm lọc theo ngày ban đầu >>>
+        applyDateFilter();
+        // <<< KẾT THÚC SỬA ĐỔI >>>
+    }
+
+    // --- Table Column Setup (Giữ nguyên code của bạn) ---
+    private void setupTableColumns() {
+        // Your existing implementation...
+        colStt.setCellValueFactory(cellData -> new SimpleIntegerProperty(ticketTable.getItems().indexOf(cellData.getValue()) + 1).asObject());
+        colHoTenKH.setCellValueFactory(cellData -> {
+            Ve ve = cellData.getValue();
+            String customerName = "";
+            if (ve != null && ve.getKhachHang() != null && ve.getKhachHang().getTenKhachHang() != null) {
+                customerName = ve.getKhachHang().getTenKhachHang();
+            }
+            return new SimpleStringProperty(customerName);
+        });
+        colGaKhoiHanh.setCellValueFactory(cellData -> { Ve ve = cellData.getValue(); String stationName = ""; if (ve != null) { try { NhaGa ga = nhaGaDAO.findBySTTNhaGa(ve.getSttGaKhoiHnah()); stationName = (ga != null && ga.getTenNhaGa() != null) ? ga.getTenNhaGa() : "Ga " + ve.getSttGaKhoiHnah(); } catch (Exception e) { stationName = "Ga " + ve.getSttGaKhoiHnah(); } } return new SimpleStringProperty(stationName); });
+        colGaDen.setCellValueFactory(cellData -> { Ve ve = cellData.getValue(); String stationName = ""; if (ve != null) { try { NhaGa ga = nhaGaDAO.findBySTTNhaGa(ve.getSttGaDen()); stationName = (ga != null && ga.getTenNhaGa() != null) ? ga.getTenNhaGa() : "Ga " + ve.getSttGaDen(); } catch (Exception e) { stationName = "Ga " + ve.getSttGaDen(); } } return new SimpleStringProperty(stationName); });
+        colLoaiVe.setCellValueFactory(new PropertyValueFactory<>("loaiVe"));
+        colGiaVe.setCellValueFactory(new PropertyValueFactory<>("giaVe"));
+        colGiaVe.setCellFactory(tc -> new TableCell<>() { @Override protected void updateItem(Double price, boolean empty) { super.updateItem(price, empty); setText(empty || price == null ? "" : CURRENCY_FORMAT.format(price)); } });
+        colGhe.setCellValueFactory(cellData -> { Ve ve = cellData.getValue(); String seat = ""; if (ve != null && ve.getGhe() != null && ve.getGhe().getMaGhe() != null) { try { String maGhe = ve.getGhe().getMaGhe();  seat = maGhe; } catch (Exception e){ seat="?"; } } return new SimpleStringProperty(seat); });
+        colToa.setCellValueFactory(cellData -> { Ve ve = cellData.getValue(); String coach = ""; if (ve != null && ve.getGhe().getToa().getTenToa() != null) { try { String tenToa = ve.getGhe().getToa().getTenToa(); coach = tenToa; } catch (Exception e){ coach="?"; } } return new SimpleStringProperty(coach); });
+    }
+
+
+    // --- Helper for Button Columns (Giữ nguyên code của bạn) ---
+    private Callback<TableColumn<Ve, Void>, TableCell<Ve, Void>> createButtonCellFactory(String buttonText, String style) {
+        // Your existing implementation...
+        return param -> { final TableCell<Ve, Void> cell = new TableCell<>() { private final Button btn = new Button(buttonText); { btn.setStyle(style); btn.setOnAction(event -> { Ve ve = getTableView().getItems().get(getIndex()); handleXemChiTiet(ve); }); btn.setMaxWidth(Double.MAX_VALUE); setAlignment(Pos.CENTER); } @Override public void updateItem(Void item, boolean empty) { super.updateItem(item, empty); setGraphic(empty ? null : btn); } }; return cell; };
+    }
+
+    // --- Data Loading (Giữ nguyên code của bạn) ---
+    private void loadDataIntoTable() {
+        // Your existing implementation...
+        try { List<Ve> veList = veDAO.getAll(); if (veList != null) { masterTicketList.setAll(veList); System.out.println("Loaded " + veList.size() + " tickets from DAO."); } else { System.err.println("VeDAO.getAll() returned null."); masterTicketList.clear(); showAlert(Alert.AlertType.ERROR, "Lỗi Tải Dữ Liệu", "Không thể tải danh sách vé (DAO trả về null)."); } } catch (Exception e) { System.err.println("Error loading data from VeDAO: " + e.getMessage()); e.printStackTrace(); masterTicketList.clear(); showAlert(Alert.AlertType.ERROR, "Lỗi Tải Dữ Liệu", "Đã xảy ra lỗi khi tải danh sách vé:\n" + e.getMessage()); }
+    }
+
+    // --- UI Update Methods (Giữ nguyên code của bạn) ---
+    private void showTicketDetails(Ve ve) {
+        // Your existing implementation...
+        if (ve == null) { clearTicketDetails(); return; } KhachHang kh = null; if (ve.getKhachHang() != null && ve.getKhachHang().getMaKhachHang() != null) { try { kh = khachHangDAO.findById(ve.getKhachHang().getMaKhachHang()); } catch (Exception e) { System.err.println("Error fetching customer details for maKH " + ve.getKhachHang().getMaKhachHang() + ": " + e.getMessage()); } }
+        txtHoVaTenKH.setText(kh != null && kh.getTenKhachHang() != null ? kh.getTenKhachHang() : ""); txtSdtKH.setText(kh != null && kh.getSoDienThoai() != null ? kh.getSoDienThoai() : ""); txtCccdKH.setText(kh != null && kh.getCCCD() != null ? kh.getCCCD() : ""); txtEmailKH.setText(kh != null && kh.getEmail() != null ? kh.getEmail() : "");
+        txtLoaiVe.setText(ve.getLoaiVe() != null ? ve.getLoaiVe().toString() : ""); txtGiaVe.setText(ve.getGiaVe() != 0 ? CURRENCY_FORMAT.format(ve.getGiaVe()) : ""); txtNgayDatDisplay.setText(ve.getNgayDat() != null ? ve.getNgayDat().format(DATETIME_FORMAT) : "");
+        String gaDiName = "Ga " + ve.getSttGaKhoiHnah(); try { NhaGa gaDi = nhaGaDAO.findBySTTNhaGa(ve.getSttGaKhoiHnah()); if (gaDi != null && gaDi.getTenNhaGa() != null) gaDiName = gaDi.getTenNhaGa(); } catch (Exception e) {} txtGaKhoiHanh.setText(gaDiName);
+        String gaDenName = "Ga " + ve.getSttGaDen(); try { NhaGa gaDen = nhaGaDAO.findBySTTNhaGa(ve.getSttGaDen()); if (gaDen != null && gaDen.getTenNhaGa() != null) gaDenName = gaDen.getTenNhaGa(); } catch (Exception e) {} txtGaDen.setText(gaDenName);
+        String seatInfo = ""; String coachInfo = ""; LocalDateTime departureTime = null;
+        try { Ghe ghe = ve.getGhe(); if (ghe != null) { if (ghe.getMaGhe() != null && !ghe.getMaGhe().isEmpty()) seatInfo = ghe.getMaGhe(); else if (ghe.getViTriGhe() != null && !ghe.getViTriGhe().isEmpty()) seatInfo = ghe.getViTriGhe(); if (ghe.getToa() != null) { Object toaObj = ghe.getToa(); try { coachInfo = (String) toaObj.getClass().getMethod("getTenToa").invoke(toaObj); } catch (NoSuchMethodException nsme) { try { coachInfo = String.valueOf(toaObj.getClass().getMethod("getSoToa").invoke(toaObj)); } catch (Exception ignored) { } } catch (Exception ignored) { } } if (ve.getNgayDat() != null) departureTime = ve.getNgayDat(); } // Incorrect departure time source - kept as is per request
+        else if (ve.getGhe() != null && ve.getGhe().getMaGhe() != null) { // Fallback using maGhe which comes from Ghe object according to previous code
+            String maGhe = ve.getGhe().getMaGhe();
+            if (maGhe.toUpperCase().startsWith("T")) { int sep = maGhe.indexOf('-'); if (sep > 1) coachInfo = maGhe.substring(1, sep); }
+            int sep = maGhe.indexOf('-'); if (sep != -1 && sep < maGhe.length() - 1) seatInfo = maGhe.substring(sep + 1); else if (!maGhe.toUpperCase().startsWith("T")) seatInfo = maGhe;
+        }
+        } catch (Exception e) { System.err.println("Error accessing details via ve.getGhe() or parsing maGhe: " + e.getMessage()); if (ve.getGhe() != null && ve.getGhe().getMaGhe() != null) { seatInfo = "?"; coachInfo = "? (" + ve.getGhe().getMaGhe() + ")"; } } // Added null check for ve.getGhe()
+        txtViTriGhe.setText(seatInfo); txtToa.setText(coachInfo); txtNgayKhoiHanhDisplay.setText(departureTime != null ? departureTime.format(DATETIME_FORMAT) : "");
+    }
+
+
+    // --- clearTicketDetails (Giữ nguyên code của bạn) ---
+    private void clearTicketDetails() {
+        // Your existing implementation...
+        txtHoVaTenKH.clear(); txtSdtKH.clear(); txtCccdKH.clear(); txtEmailKH.clear(); txtLoaiVe.clear(); txtViTriGhe.clear(); txtGaKhoiHanh.clear(); txtNgayKhoiHanhDisplay.clear(); txtGiaVe.clear(); txtToa.clear(); txtGaDen.clear(); txtNgayDatDisplay.clear(); ticketTable.getSelectionModel().clearSelection();
+    }
+
+    // --- Event Handlers Setup ---
+    private void setupListeners() {
+        // <<< SỬA ĐỔI: Listener cho ô tìm kiếm gọi applySearchFilter >>>
+        txtTimKiem.textProperty().addListener((obs, oldVal, newVal) -> applySearchFilter());
+        txtTimKiem.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                applySearchFilter();
+            }
+        });
+
+        // Listener chọn dòng (Giữ nguyên)
         ticketTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 showTicketDetails(newSelection);
             } else {
-                clearTicketDetails(); // Clear fields if no row is selected
+                clearTicketDetails();
             }
         });
 
-        // Initialize fields to be clear
-        clearTicketDetails();
-    }
-
-    // --- Table Setup ---
-    private void setupTableColumns() {
-        // Link TableColumn to Ve model properties or nested/derived values
-
-        colMaVe.setCellValueFactory(new PropertyValueFactory<>("maVe")); // Direct property
-        colDoiTuong.setCellValueFactory(new PropertyValueFactory<>("loaiVe")); // Direct property (Enum, toString() used)
-        colGiaVe.setCellValueFactory(new PropertyValueFactory<>("giaVe")); // Direct property
-
-
-        // Handle STT (Ordinal Number) - requires custom CellValueFactory
-        colStt.setCellValueFactory(cellData -> {
-            // Find the index of the current item in the *filtered* list
-            int index = filteredTicketList.getSourceIndex(cellData.getTableView().getItems().indexOf(cellData.getValue()));
-            // Add 1 because index is 0-based
-            return new javafx.beans.property.SimpleIntegerProperty(index + 1).asObject();
-        });
-        colStt.setSortable(false); // STT shouldn't be sortable this way
-
-        // Handle "Điểm đi" and "Điểm đến" (Derived from sttGaKhoiHnah and sttGaDen)
-        // Use SimpleStringProperty to wrap the derived value for the TableView
-        colDiemDi.setCellValueFactory(cellData -> {
-            Ve ve = cellData.getValue();
-            // Derive the station name from sttGaKhoiHnah
-            String stationName = "Ga " + ve.getSttGaKhoiHnah();
-            // In a real app, you might map sttGaKhoiHnah to a NhaGa object and get its name
-            // String stationName = ve.getGhe() != null && ve.getGhe().getGaKhoiHanh() != null ? ve.getGhe().getGaKhoiHanh().getTenGa() : "N/A";
-            return new SimpleStringProperty(stationName); // Wrap String in SimpleStringProperty
-        });
-
-        colDiemDen.setCellValueFactory(cellData -> {
-            Ve ve = cellData.getValue();
-            // Derive the station name from sttGaDen
-            String stationName = "Ga " + ve.getSttGaDen();
-            // In a real app: ve.getGhe() != null && ve.getGhe().getGaKetThuc() != null ? ve.getGhe().getGaKetThuc().getTenGa() : "N/A";
-            return new SimpleStringProperty(stationName); // Wrap String in SimpleStringProperty
-        });
-
-
-        // Handle "Ngày đặt" (ngayDat) - needs formatting
-        colNgayDat.setCellValueFactory(new PropertyValueFactory<>("ngayDat"));
-        colNgayDat.setCellFactory(column -> new TableCell<Ve, LocalDateTime>() {
-            @Override
-            protected void updateItem(LocalDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    // Format the date/time
-                    setText(item.format(DATETIME_FORMAT));
-                }
-            }
-        });
-        colNgayDat.setComparator( (d1, d2) -> {
-            if (d1 == null && d2 == null) return 0;
-            if (d1 == null) return -1;
-            if (d2 == null) return 1;
-            return d1.compareTo(d2);
-        }); // Comparator handles nulls
-
-
-        // Handle "Ngày khởi hành" (Derived/Placeholder) - needs formatting
-        // Assume this comes from a related entity, e.g., ve.getGhe().getChuyenTau().getNgayKhoiHanh()
-        // For mock data, let's just use ngayDat + a few days as a placeholder
-        colNgayKhoiHanh.setCellValueFactory(cellData -> {
-            Ve ve = cellData.getValue();
-            LocalDateTime ngayKhoiHanh = null;
-            if (ve.getNgayDat() != null) {
-                // Mocking ngayKhoiHanh = ngayDat + some random days (for demo)
-                ngayKhoiHanh = ve.getNgayDat().plusDays( (long)(Math.random() * 5) + 1).withHour(8).withMinute(0); // Example time
-                // In a real app: ve.getGhe() != null && ve.getGhe().getChuyenTau() != null ? ve.getGhe().getChuyenTau().getNgayKhoiHanh() : null;
-            }
-            return new SimpleObjectProperty<>(ngayKhoiHanh); // Wrap LocalDateTime in SimpleObjectProperty
-        });
-        colNgayKhoiHanh.setCellFactory(column -> new TableCell<Ve, LocalDateTime>() {
-            @Override
-            protected void updateItem(LocalDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    // Format the date/time
-                    setText(item.format(DATETIME_FORMAT));
-                }
-            }
-        });
-        colNgayKhoiHanh.setComparator( (d1, d2) -> {
-            if (d1 == null && d2 == null) return 0;
-            if (d1 == null) return -1;
-            if (d2 == null) return 1;
-            return d1.compareTo(d2);
-        }); // Comparator handles nulls
-    }
-
-    // --- Mock Data Loading ---
-    private void loadMockTicketData() {
-        // Clear existing data
-        masterTicketList.clear();
-
-        // Create some mock KhachHang to link tickets to
-        // Using the 6-argument constructor you provided in KhachHang.java
-        KhachHang kh1 = new KhachHang("KH001", "Nguyễn Văn A", "0900000001", "a.nguyen@example.com", GioiTinh.NAM, "111111111111");
-        KhachHang kh2 = new KhachHang("KH002", "Trần Thị B", "0900000002", "b.tran@example.com", GioiTinh.NU, "222222222222");
-        KhachHang kh3 = new KhachHang("KH003", "Lê Văn C", "0900000003", "c.le@example.com", GioiTinh.NAM, "333333333333");
-
-
-        // Add some dummy Ve objects
-        // Ve(String maVe, LoaiVe loaiVe, double giaVe, int sttGaKhoiHnah, int sttGaDen, LocalDateTime ngayDat, LocalDateTime ngayChinhSuaGanNhat, TrangThaiVe trangThaiVe, HoaDon hoaDon, KhachHang khachHang, Ghe ghe)
-        masterTicketList.addAll(
-                new Ve("V001", LoaiVe.NGUOILON, 500000.0, 1, 5, LocalDateTime.now().minusDays(2), LocalDateTime.now().minusDays(1), TrangThaiVe.DAMUA, null, kh1, null), // From Ga 1 to Ga 5
-                new Ve("V002", LoaiVe.TREEM, 250000.0, 1, 3, LocalDateTime.now().minusDays(1), LocalDateTime.now().minusHours(1), TrangThaiVe.DAMUA, null, kh1, null), // From Ga 1 to Ga 3
-                new Ve("V003", LoaiVe.NGUOILON, 700000.0, 2, 7, LocalDateTime.now().minusDays(3), LocalDateTime.now().minusDays(3), TrangThaiVe.DAMUA, null, kh2, null), // From Ga 2 to Ga 7
-                new Ve("V004", LoaiVe.NGUOILON, 500000.0, 3, 6, LocalDateTime.now().minusHours(12), LocalDateTime.now().minusHours(12), TrangThaiVe.DAMUA, null, kh2, null), // From Ga 3 to Ga 6
-                new Ve("V005", LoaiVe.NGUOILON, 350000.0, 4, 8, LocalDateTime.now().minusDays(5), LocalDateTime.now().minusDays(5), TrangThaiVe.DAMUA, null, kh3, null) // From Ga 4 to Ga 8
-                // Add more mock data as needed
-        );
-
-        System.out.println("Loaded " + masterTicketList.size() + " mock tickets.");
-    }
-
-    // --- UI Update Methods ---
-    // Parameter type is Ve
-    private void showTicketDetails(Ve ve) {
-        // Show Ticket Info
-        txtMaVe.setText(ve.getMaVe() != null ? ve.getMaVe() : "N/A");
-
-        // Show Customer Details (from nested KhachHang)
-        KhachHang khachHang = ve.getKhachHang();
-        if (khachHang != null) {
-            txtMaKhachHang.setText(khachHang.getMaKhachHang() != null ? khachHang.getMaKhachHang() : "N/A");
-            txtHoVaTen.setText(khachHang.getTenKhachHang() != null ? khachHang.getTenKhachHang() : "N/A"); // Use tenKhachHang
-            txtCccd.setText(khachHang.getCCCD() != null ? khachHang.getCCCD() : "N/A"); // Use CCCD (uppercase)
-            txtSoDienThoai.setText(khachHang.getSoDienThoai() != null ? khachHang.getSoDienThoai() : "N/A");
-            txtEmail.setText(khachHang.getEmail() != null ? khachHang.getEmail() : "N/A");
-            cbGioiTinh.setValue(khachHang.getGioiTinh() != null ? khachHang.getGioiTinh().toString() : "N/A"); // Convert enum to String
-        } else {
-            // Clear customer fields if KhachHang is null
-            txtMaKhachHang.setText("");
-            txtHoVaTen.setText("");
-            txtCccd.setText("");
-            txtSoDienThoai.setText("");
-            txtEmail.setText("");
-            cbGioiTinh.setValue(null);
+        // <<< SỬA ĐỔI: Listener cho DatePicker gọi applyDateFilter >>>
+        if (dpDateField != null) {
+            dpDateField.valueProperty().addListener((obs, oldDate, newDate) -> {
+                System.out.println("DatePicker value changed to: " + newDate);
+                applyDateFilter(); // Gọi hàm lọc theo ngày
+            });
         }
     }
 
-    private void clearTicketDetails() {
-        // Clear Ticket Info
-        txtMaVe.setText("");
-
-        // Clear Customer Fields
-        txtMaKhachHang.setText("");
-        txtHoVaTen.setText("");
-        txtCccd.setText("");
-        txtSoDienThoai.setText("");
-        txtEmail.setText("");
-        cbGioiTinh.setValue(null);
-
-        ticketTable.getSelectionModel().clearSelection(); // Deselect row
-    }
-
-
-    // --- Event Handlers Setup ---
-    private void setupListeners() {
-        // Listener for the search text field
-        txtTimKiem.textProperty().addListener((obs, oldVal, newVal) -> applySearchFilter());
-
-        // Optional: Trigger search on Enter key press in search field
-        txtTimKiem.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                applySearchFilter(); // Apply filter when Enter is pressed
-                System.out.println("Search triggered by Enter: " + txtTimKiem.getText());
-            }
-        });
-    }
-
-
+    // --- Button Actions Setup ---
     private void setupButtonActions() {
-        // Handle "Tìm kiếm" button action
+        // <<< SỬA ĐỔI: Nút Tìm kiếm gọi applySearchFilter >>>
         btnTimKiem.setOnAction(event -> applySearchFilter());
 
-        // Handle "Chi tiết" button action (Placeholder)
-        btnChiTiet.setOnAction(event -> handleChiTiet());
-
-        // Handle "In Vé" button action (Placeholder)
+        // Các nút khác giữ nguyên
         btnInVe.setOnAction(event -> handleInVe());
-
-        // Handle "Hủy vé" button action (Placeholder)
         btnHuyVe.setOnAction(event -> handleHuyVe());
-
-        // Handle "Cập nhật" button action (Placeholder - seems to update customer info)
-        btnCapNhat.setOnAction(event -> handleCapNhatKhachHang());
+        btnCapNhat.setOnAction(event -> handleCapNhat());
     }
 
     // --- Filtering Logic ---
+
+    // <<< BỔ SUNG: Hàm lọc CHỈ THEO NGÀY >>>
+    private void applyDateFilter() {
+        LocalDate selectedDate = (dpDateField != null) ? dpDateField.getValue() : null;
+
+        filteredTicketList.setPredicate(ve -> {
+            // Chỉ kiểm tra ngày
+            return checkDate(ve, selectedDate);
+        });
+
+        ticketTable.refresh();
+        clearTicketDetails();
+    }
+    // <<< KẾT THÚC BỔ SUNG >>>
+
+    // <<< BỔ SUNG: Hàm lọc CHỈ THEO TÌM KIẾM (dùng toàn bộ masterList) >>>
     private void applySearchFilter() {
         String searchText = txtTimKiem.getText();
 
+        // Luôn áp dụng predicate lên danh sách gốc masterTicketList thông qua filteredTicketList
         filteredTicketList.setPredicate(ve -> {
-            // If search text is empty, display all tickets
-            if (searchText == null || searchText.isEmpty()) {
-                return true;
-            }
-
-            String lowerCaseFilter = searchText.toLowerCase();
-
-            // Check if search text matches Ticket ID or Customer Name (based on prompt text)
-            // Access nested KhachHang property carefully, handling nulls
-            boolean idMatch = ve.getMaVe() != null && ve.getMaVe().toLowerCase().contains(lowerCaseFilter);
-
-            boolean customerNameMatch = false;
-            if (ve.getKhachHang() != null && ve.getKhachHang().getTenKhachHang() != null) {
-                customerNameMatch = ve.getKhachHang().getTenKhachHang().toLowerCase().contains(lowerCaseFilter);
-            }
-
-            return idMatch || customerNameMatch; // Match if either ID or Customer Name matches
+            // Chỉ kiểm tra text tìm kiếm
+            return checkSearchText(ve, searchText);
         });
 
-        // Update STT after filtering (hacky way to force re-rendering)
-        ticketTable.getColumns().get(0).setVisible(false);
-        ticketTable.getColumns().get(0).setVisible(true);
-
-        // Clear details and selection after filtering, as selection might be lost
+        ticketTable.refresh();
         clearTicketDetails();
     }
+    // <<< KẾT THÚC BỔ SUNG >>>
 
-    // --- Button Action Implementations (Placeholders) ---
+    // --- Helper function for Search Text Check (Giữ nguyên code của bạn) ---
+    private boolean checkSearchText(Ve ve, String searchText) {
+        // Your existing implementation...
+        if (searchText == null || searchText.isEmpty()) { return true; } if (ve == null) { return false; } String lowerCaseFilter = searchText.toLowerCase();
+        if (ve.getMaVe() != null && ve.getMaVe().toLowerCase().contains(lowerCaseFilter)) { return true; }
+        if (ve.getKhachHang() != null && ve.getKhachHang().getMaKhachHang() != null && ve.getKhachHang().getMaKhachHang().toLowerCase().contains(lowerCaseFilter)) { return true; } // Added null check
+        if (ve.getGhe() != null && ve.getGhe().getMaGhe() != null && ve.getGhe().getMaGhe().toLowerCase().contains(lowerCaseFilter)) { return true; } // Added null check
+        KhachHang kh = null; if (ve.getKhachHang() != null && ve.getKhachHang().getMaKhachHang() != null) { try { kh = khachHangDAO.findById(ve.getKhachHang().getMaKhachHang()); } catch (Exception e) { } } // Added null check
+        if (kh != null) { if (kh.getTenKhachHang() != null && kh.getTenKhachHang().toLowerCase().contains(lowerCaseFilter)) { return true; } if (kh.getSoDienThoai() != null && kh.getSoDienThoai().toLowerCase().contains(lowerCaseFilter)) { return true; } if (kh.getCCCD() != null && kh.getCCCD().toLowerCase().contains(lowerCaseFilter)) { return true; } }
+        NhaGa gaDi = null; try { gaDi = nhaGaDAO.findBySTTNhaGa(ve.getSttGaKhoiHnah()); } catch (Exception e) { } if (gaDi != null && gaDi.getTenNhaGa() != null && gaDi.getTenNhaGa().toLowerCase().contains(lowerCaseFilter)) { return true; }
+        NhaGa gaDen = null; try { gaDen = nhaGaDAO.findBySTTNhaGa(ve.getSttGaDen()); } catch (Exception e) { } if (gaDen != null && gaDen.getTenNhaGa() != null && gaDen.getTenNhaGa().toLowerCase().contains(lowerCaseFilter)) { return true; }
+        return false;
+    }
 
-    private void handleChiTiet() {
-        Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem();
-        if (selectedTicket != null) {
-            System.out.println("Button 'Chi tiết' clicked for ticket: " + selectedTicket.getMaVe());
-            // TODO: Implement logic to show detailed ticket information (e.g., in a new window/dialog)
-            showAlert(Alert.AlertType.INFORMATION, "Chi tiết vé", "Chức năng 'Chi tiết' chưa được triển khai.\nVé đã chọn: " + selectedTicket.getMaVe());
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để xem chi tiết.");
-        }
+    // --- Helper function for Date Check (Giữ nguyên code của bạn) ---
+    private boolean checkDate(Ve ve, LocalDate selectedDate) {
+        // Your existing implementation...
+        if (selectedDate == null) { return true; } if (ve == null || ve.getNgayDat() == null) { return false; } return ve.getNgayDat().toLocalDate().equals(selectedDate);
+    }
+
+
+    // --- Action Handlers (Giữ nguyên code của bạn) ---
+    private void handleXemChiTiet(Ve ve) {
+        // Your existing implementation...
+        if (ve != null) { System.out.println("Xem chi tiết button clicked for MaVe: " + ve.getMaVe()); showTicketDetails(ve); }
     }
 
     private void handleInVe() {
-        Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem();
-        if (selectedTicket != null) {
-            System.out.println("Button 'In Vé' clicked for ticket: " + selectedTicket.getMaVe());
-            // TODO: Implement logic to generate and display/print the ticket
-            showAlert(Alert.AlertType.INFORMATION, "In vé", "Chức năng 'In Vé' chưa được triển khai.\nVé đã chọn: " + selectedTicket.getMaVe());
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để in.");
-        }
+        // Your existing implementation...
+        Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem(); if (selectedTicket != null) { System.out.println("Button 'In Vé' clicked for ticket: " + selectedTicket.getMaVe()); showAlert(Alert.AlertType.INFORMATION, "In vé", "Chức năng 'In Vé' chưa được triển khai.\nVé đã chọn: " + selectedTicket.getMaVe()); } else { showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để in."); }
     }
 
     private void handleHuyVe() {
-        Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem();
-        if (selectedTicket != null) {
-            // Confirm cancellation
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Xác nhận hủy vé");
-            confirmation.setHeaderText("Hủy vé " + selectedTicket.getMaVe() + "?");
-            confirmation.setContentText("Bạn có chắc chắn muốn hủy vé này?");
-            confirmation.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.OK) {
-                    System.out.println("Button 'Hủy vé' confirmed for ticket: " + selectedTicket.getMaVe());
-                    // TODO: Implement logic to cancel the ticket in your data source
-                    // Update the ticket status in the model (if TrangThaiVe is in the table, it would update)
-                    // selectedTicket.setTrangThaiVe(TrangThaiVe.DaHuy); // Example
-                    // masterTicketList.remove(selectedTicket); // Or remove from list if cancelled tickets are not shown
-
-                    showAlert(Alert.AlertType.INFORMATION, "Thành công", "Vé " + selectedTicket.getMaVe() + " đã được hủy (chức năng chưa hoàn chỉnh).");
-                    // Refresh table if status is not automatically updated
-                    ticketTable.refresh();
-                    clearTicketDetails(); // Clear details after cancelling
-                }
-            });
-        } else {
-            showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để hủy.");
-        }
+        // Your existing implementation...
+        Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem(); if (selectedTicket != null) { if (selectedTicket.getTrangThaiVe() == TrangThaiVe.CHUAMUA) { showAlert(Alert.AlertType.INFORMATION, "Thông Báo", "Vé " + selectedTicket.getMaVe() + " đã được hủy trước đó."); return; } Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION); confirmation.setTitle("Xác nhận hủy vé"); confirmation.setHeaderText("Hủy vé " + selectedTicket.getMaVe() + "?"); confirmation.setContentText("Bạn có chắc chắn muốn hủy vé này?"); confirmation.showAndWait().ifPresent(response -> { if (response == ButtonType.OK) { System.out.println("Button 'Hủy vé' confirmed for ticket: " + selectedTicket.getMaVe()); try { selectedTicket.setTrangThaiVe(TrangThaiVe.CHUAMUA); selectedTicket.setNgayChinhSuaGanNhat(LocalDateTime.now()); boolean success = veDAO.update(selectedTicket); if (success) { showAlert(Alert.AlertType.INFORMATION, "Thành công", "Vé " + selectedTicket.getMaVe() + " đã được hủy."); masterTicketList.remove(selectedTicket); clearTicketDetails(); } else { selectedTicket.setTrangThaiVe(TrangThaiVe.DAMUA); showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể hủy vé " + selectedTicket.getMaVe() + " trong cơ sở dữ liệu."); } } catch (Exception e) { selectedTicket.setTrangThaiVe(TrangThaiVe.DAMUA); showAlert(Alert.AlertType.ERROR, "Lỗi Hủy Vé", "Đã xảy ra lỗi: " + e.getMessage()); e.printStackTrace(); } } }); } else { showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để hủy."); }
     }
 
-    private void handleCapNhatKhachHang() {
-        // This button seems to update the customer info associated with the selected ticket
+    private void handleCapNhat() {
         Ve selectedTicket = ticketTable.getSelectionModel().getSelectedItem();
-        if (selectedTicket != null && selectedTicket.getKhachHang() != null) {
-            KhachHang khachHangToUpdate = selectedTicket.getKhachHang();
 
-            // The info fields are currently read-only based on the image.
-            // If these fields were editable, you would get updated values like this:
-            // String newHoVaTen = txtHoVaTen.getText();
-            // String newCccd = txtCccd.getText();
-            // ... etc.
-            // And then set them on khachHangToUpdate:
-            // khachHangToUpdate.setTenKhachHang(newHoVaTen);
-            // khachHangToUpdate.setCCCD(newCccd);
-            // ... set other properties ...
-
-            // TODO: Save changes to your actual data source (database/API) for this KhachHang object
-            // customerService.update(khachHangToUpdate);
-
-            // For this read-only example, just show an alert
-            showAlert(Alert.AlertType.INFORMATION, "Cập nhật khách hàng", "Chức năng 'Cập nhật khách hàng' chưa được triển khai.\n(Thông tin khách hàng đang ở chế độ hiển thị)");
-
-            // If the fields become editable and you update, refresh the table if customer name/info is shown in table columns
-            // ticketTable.refresh();
-        } else if (selectedTicket != null && selectedTicket.getKhachHang() == null) {
-            showAlert(Alert.AlertType.WARNING, "Lỗi", "Vé đã chọn không có thông tin khách hàng.");
-        }
-        else {
+        if (selectedTicket == null) {
             showAlert(Alert.AlertType.WARNING, "Lỗi", "Vui lòng chọn một vé để cập nhật thông tin khách hàng.");
+            return;
+        }
+
+        if (selectedTicket.getKhachHang() == null) {
+            showAlert(Alert.AlertType.ERROR, "Lỗi Dữ Liệu", "Vé này không có thông tin khách hàng liên kết.");
+            return;
+        }
+
+        try {
+            String newName = txtHoVaTenKH.getText().trim();
+            String newPhone = txtSdtKH.getText().trim();
+            String newCccd = txtCccdKH.getText().trim();
+            String newEmail = txtEmailKH.getText().trim();
+
+            // Validation (giữ nguyên)
+            if (newName.isEmpty()) {
+                thongBao("Vui lòng nhập Họ và tên khách hàng.", txtHoVaTenKH);
+                return;
+            }
+            if (newCccd.isEmpty()) {
+                thongBao("Vui lòng nhập căn cước công dân khách hàng.", txtCccdKH);
+                return;
+            }
+            if (!newCccd.matches("\\d{12}")) {
+                thongBao("CCCD phải là 12 chữ số.", txtCccdKH);
+                return;
+            }
+            if (newPhone.isEmpty()) {
+                thongBao("Vui lòng nhập số điện thoại khách hàng.", txtSdtKH);
+                return;
+            }
+            if (!newPhone.matches("\\d{10}")) {
+                thongBao("Số điện thoại không hợp lệ (phải là 10 số).", txtSdtKH);
+                return;
+            }
+            if (newEmail.isEmpty()) {
+                thongBao("Vui lòng nhập email khách hàng.", txtEmailKH);
+                return;
+            }
+            if (!newEmail.matches("^[a-zA-Z0-9._%+-]+@gmail.com$")) {
+                thongBao("Địa chỉ email không hợp lệ.", txtEmailKH);
+                return;
+            }
+
+            // Cập nhật đối tượng KhachHang
+            KhachHang kh = selectedTicket.getKhachHang();
+            kh.setTenKhachHang(newName);
+            kh.setSoDienThoai(newPhone);
+            kh.setCCCD(newCccd);
+            kh.setEmail(newEmail);
+
+            // Cập nhật thời gian chỉnh sửa và KhachHang của Vé
+            selectedTicket.setNgayChinhSuaGanNhat(LocalDateTime.now());
+            selectedTicket.setKhachHang(kh);
+
+            // Cập nhật KhachHang trong cơ sở dữ liệu trước
+            boolean khachHangUpdated = khachHangDAO.update(kh);
+            if (!khachHangUpdated) {
+                showAlert(Alert.AlertType.ERROR, "Lỗi Cập Nhật", "Không thể cập nhật thông tin khách hàng trong cơ sở dữ liệu.");
+                return;
+            }
+
+            // Cập nhật Vé trong cơ sở dữ liệu
+            boolean veUpdated = veDAO.update(selectedTicket);
+            if (veUpdated) {
+                // Cập nhật masterTicketList
+                int index = masterTicketList.indexOf(selectedTicket);
+                if (index >= 0) {
+                    masterTicketList.set(index, selectedTicket);
+                } else {
+                    System.err.println("Selected ticket not found in masterTicketList.");
+                }
+
+                // Làm mới bảng
+                ticketTable.refresh();
+
+                // Chọn lại dòng và hiển thị chi tiết
+                ticketTable.getSelectionModel().clearSelection();
+                ticketTable.getSelectionModel().select(selectedTicket);
+
+                // Đảm bảo hiển thị dữ liệu mới nhất
+                showTicketDetails(selectedTicket);
+
+                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Thông tin vé đã được cập nhật.");
+
+                // Áp dụng lại bộ lọc ngày nếu cần
+                applyDateFilter();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Lỗi Cập Nhật", "Không thể cập nhật thông tin vé trong cơ sở dữ liệu.");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Lỗi khi cập nhật vé: " + (selectedTicket != null ? selectedTicket.getMaVe() : "null"));
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Lỗi Cập Nhật", "Đã xảy ra lỗi: " + e.getMessage());
         }
     }
 
 
-    // Helper to show alerts (can reuse from previous controllers)
+    private void thongBao(String message, TextField txt) {
+        showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", message);
+        txt.requestFocus();
+        txt.selectAll();
+    }
+
+    // --- Helper Methods (showAlert - Keep As Is) ---
     private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        // ... Your existing showAlert code ...
+        Alert alert = new Alert(type); alert.setTitle(title); alert.setHeaderText(null); alert.setContentText(message); alert.showAndWait();
     }
 }
+
