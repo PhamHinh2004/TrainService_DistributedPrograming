@@ -1,12 +1,14 @@
 package Controller;
 
 import Model.NhanVien; // Import NhanVien model
+import Model.NhomQuyen; // Import NhomQuyen
 // Import other necessary classes
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -17,10 +19,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ResourceBundle;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays; // Needed for setupHoverEffects
+import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
@@ -32,20 +33,27 @@ public class MainController implements Initializable {
 
     // User info button and labels
     @FXML
-    private javafx.scene.control.Button btnUserInfo;
+    private Button btnUserInfo;
     @FXML
     private Label lblUserName; // fx:id="lblUserName"
     @FXML
     private Label lblUserId;  // fx:id="lblUserId"
 
     // Standard buttons
-    @FXML private javafx.scene.control.Button btnDatVe;
-    @FXML private javafx.scene.control.Button btnQuanLyVe;
-    @FXML private javafx.scene.control.Button btnQuanLyHoaDon;
-    @FXML private javafx.scene.control.Button btnQuanLyKhachHang;
-    @FXML private javafx.scene.control.Button btnQuanLyNhanVien; // Manager only
-    @FXML private javafx.scene.control.Button btnDangXuat;
-    @FXML private javafx.scene.control.Button btnQuanLyCaTruc; // Manager only
+    @FXML
+    private Button btnDatVe;
+    @FXML
+    private Button btnQuanLyVe;
+    @FXML
+    private Button btnQuanLyHoaDon;
+    @FXML
+    private Button btnQuanLyKhachHang;
+    @FXML
+    private Button btnQuanLyNhanVien; // Manager only
+    @FXML
+    private Button btnDangXuat;
+    @FXML
+    private Button btnQuanLyCaTruc; // Manager only
 
 
     // MenuButton and MenuItems for ThongKe (Manager only)
@@ -58,11 +66,12 @@ public class MainController implements Initializable {
 
 
     // Map to map Buttons to FXML paths (excluding user info and logout)
-    private final Map<javafx.scene.control.Button, String> fxmlButtonMap = new HashMap<>();
+    private final Map<Button, String> fxmlButtonMap = new HashMap<>();
     // MenuItems are handled separately
 
-    // Keep track of the logged-in user
+    // Keep track of the logged-in user and their role
     private NhanVien loggedInUser;
+    private NhomQuyen loggedInUserRole; // Store the user's role
 
 
     @Override
@@ -92,9 +101,10 @@ public class MainController implements Initializable {
     }
 
     // Called by LoginController after successful login
-    public void setLoggedInUser(NhanVien user) {
+    public void setLoggedInUser(NhanVien user, NhomQuyen role) {
         this.loggedInUser = user;
-        System.out.println("MainController received user: " + (user != null ? user.getTenNhanVien() : "null") + " (" + (user != null ? user.getChucVu() : "null") + ")");
+        this.loggedInUserRole = role; // Store the role
+        System.out.println("MainController received user: " + (user != null ? user.getTenNhanVien() : "null") + " (" + (user != null ? user.getChucVu() : "null") + "), Role: " + (role != null ? role.getTenNhomQuyen() : "null"));
 
         // Update the user info display in the sidebar
         if (user != null) {
@@ -106,8 +116,8 @@ public class MainController implements Initializable {
             if (btnUserInfo != null) {
                 btnUserInfo.setOnAction(event -> {
                     if (this.loggedInUser != null) {
-                        System.out.println("User info button clicked. User role: " + this.loggedInUser.getChucVu());
-                        if ("Quản lý".equals(this.loggedInUser.getChucVu())) {
+                        System.out.println("User info button clicked. User role: " + this.loggedInUserRole.getTenNhomQuyen());
+                        if ("Quản lý".equals(this.loggedInUserRole.getTenNhomQuyen())) {
                             // Load UserInfoView and pass data for Managers
                             showUserInfoPage(this.loggedInUser); // Calling the method below
                         } else {
@@ -134,11 +144,11 @@ public class MainController implements Initializable {
 
         // --- Load the initial page based on role AFTER visibility is adjusted ---
         // This overrides the default loadContent in initialize if set there
-        if (loggedInUser != null) {
-            if ("Quản lý".equals(loggedInUser.getChucVu())) {
+        if (loggedInUserRole != null) {
+            if ("Quản lý".equals(loggedInUserRole.getTenNhomQuyen())) {
                 // Managers might land on their info page or another default
-                // Let's have managers land on their info page initially
-                showUserInfoPage(loggedInUser);
+                // Let's have managers land on the QuanLyNhanVienView initially as per requirement
+                loadContent("/View/QuanLyNhanVienView.fxml");
             } else {
                 // Other roles land on the homepage
                 loadContent("/View/HomePageView.fxml");
@@ -151,7 +161,7 @@ public class MainController implements Initializable {
 
     private void adjustUIVisibility() {
         // Determine if the logged-in user is a Manager
-        boolean isManager = loggedInUser != null && "Quản lý".equals(loggedInUser.getChucVu());
+        boolean isManager = loggedInUserRole != null && "Quản lý".equals(loggedInUserRole.getTenNhomQuyen());
         System.out.println("Adjusting UI for role: " + (isManager ? "Manager" : "Employee/Other"));
 
 
@@ -164,17 +174,17 @@ public class MainController implements Initializable {
 
         // --- Apply visibility for items visible to ALL roles (or non-managers) ---
         // These buttons are visible to both roles in this example
-        setButtonVisibility(true, btnQuanLyKhachHang, btnDangXuat, btnUserInfo);
+        setButtonVisibility(true, btnDangXuat, btnUserInfo);
 
         // Assuming these are visible only to non-managers based on the structure above
-        setButtonVisibility(!isManager, btnDatVe, btnQuanLyVe, btnQuanLyHoaDon);
+        setButtonVisibility(!isManager, btnDatVe, btnQuanLyVe, btnQuanLyHoaDon, btnQuanLyKhachHang);
 
         // Note: MenuItems inside mbThongKe will inherit visibility from mbThongKe
     }
 
     // Helper method to set visibility and managed property for Button... varargs
-    private void setButtonVisibility(boolean visible, javafx.scene.control.Button... buttons) {
-        for (javafx.scene.control.Button button : buttons) {
+    private void setButtonVisibility(boolean visible, Button... buttons) {
+        for (Button button : buttons) {
             if (button != null) { // Check if the FXML element was injected
                 button.setVisible(visible);
                 button.setManaged(visible); // Remove from layout if not visible
@@ -186,7 +196,6 @@ public class MainController implements Initializable {
     }
 
     // Helper method to set visibility and managed property for MenuButton... varargs
-    // UNCOMMENT THIS METHOD
     private void setButtonVisibility(boolean visible, MenuButton... buttons) {
         for (MenuButton button : buttons) {
             if (button != null) { // Check if the FXML element was injected
@@ -199,8 +208,6 @@ public class MainController implements Initializable {
         }
     }
 
-
-    // Phương thức để tải nội dung từ file FXML và hiển thị trong contentArea
     private void loadContent(String fxmlPath) {
         System.out.println("Loading content: " + fxmlPath);
         try {
@@ -217,8 +224,9 @@ public class MainController implements Initializable {
             // --- OPTIONAL: Pass loggedInUser to content controllers ---
             // If your loaded views need the logged-in user (e.g., for filtering data)
             // you can try to get their controller and pass the user.
-            // This requires the controllers of the loaded FXMLs to have a method like setLoggedInUser(NhanVien user).
-            Object controller = loader.getController();
+            // This requires the controllers of the loaded FXMLs to
+            Object controller = loader.getController(); // Get the controller here
+
             // Example check if controller implements a specific interface
             // if (controller instanceof UserAwareController) {
             //     ((UserAwareController) controller).setLoggedInUser(loggedInUser);
@@ -231,7 +239,6 @@ public class MainController implements Initializable {
                 ((UserInfoController) controller).setUserInfo(loggedInUser);
             }
             // --- END OPTIONAL ---
-
 
             contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
@@ -286,8 +293,8 @@ public class MainController implements Initializable {
     }
 
     // Modified setupHoverEffect to accept multiple buttons
-    private void setupHoverEffects(javafx.scene.control.Button... buttons) {
-        for (javafx.scene.control.Button button : buttons) {
+    private void setupHoverEffects(Button... buttons) {
+        for (Button button : buttons) {
             if (button != null) {
                 button.setOnMouseEntered(e ->
                         button.setStyle("-fx-background-color: #0052a3;") // Màu khi hover
@@ -369,7 +376,7 @@ public class MainController implements Initializable {
             displayError("Lỗi khi tải trang thông tin cá nhân: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            displayError("Đã xảy ra lỗi khi tải trang thông tin cá nhân: " + e.getMessage());
+            displayError("Đã xảy ra lỗi khi tải trang thông tin cá nhân" + e.getMessage());
         }
     }
 }

@@ -82,13 +82,15 @@
         <TableView fx:id="invoiceTable" prefHeight="400.0" prefWidth="600.0" VBox.vgrow="ALWAYS" style="-fx-background-color: #f0f0f0;">
             <columns>
                 <TableColumn fx:id="sttColumn" prefWidth="50.0" text="STT" />
-                <TableColumn fx:id="maHdColumn" prefWidth="100.0" text="Mã HĐ" />
-                <TableColumn fx:id="maKhColumn" prefWidth="100.0" text="Mã KH" />
-                <TableColumn fx:id="thanhTienColumn" prefWidth="120.0" text="Thành tiền" />
-                <TableColumn fx:id="ngayLapColumn" prefWidth="120.0" text="Ngày Lập" />
-                <TableColumn fx:id="soLuongColumn" prefWidth="80.0" text="Số lượng" />
-                <TableColumn fx:id="tongTienColumn" prefWidth="120.0" text="Tổng tiền" />
-                <TableColumn fx:id="trangThaiColumn" prefWidth="100.0" text="Trạng thái" />
+                <TableColumn fx:id="maHdColumn" prefWidth="120.0" text="Mã HĐ" />
+                <TableColumn fx:id="loaiHoaDonColumn" prefWidth="120.0" text="Loại HĐ" />
+                <TableColumn fx:id="tenKhColumn" prefWidth="120.0" text="Tên KH" />
+                <TableColumn fx:id="thanhTienColumn" prefWidth="150.0" text="Thành tiền" />
+                <TableColumn fx:id="ngayLapColumn" prefWidth="150.0" text="Ngày Lập" />
+                <TableColumn fx:id="soLuongColumn" prefWidth="100.0" text="Số lượng" />
+                <TableColumn fx:id="tongTienColumn" prefWidth="150.0" text="Tổng tiền" />
+                <TableColumn fx:id="trangThaiColumn" prefWidth="120.0" text="Trạng thái" />
+                <TableColumn fx:id="nhanVienColumn" prefWidth="150.0" text="Nhân viên đảm nhiệm"  />
             </columns>
             <columnResizePolicy>
                 <!-- Điều chỉnh chính sách resize cột nếu cần -->

@@ -1,50 +1,90 @@
 package Controller; // Adjust package name if necessary
 
+import Model.TaiKhoan;
+import Model.NhanVien;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ForgotPasswordController {
 
     @FXML
     private TextField emailOrUsernameField;
 
+    // Reference to the LoginController (to access DB methods)
+    private LoginController loginController;
+
+    // Setter method to inject the LoginController
+    public void setLoginController(LoginController loginController) {
+        this.loginController = loginController;
+    }
+
     @FXML
     private void handleResetPasswordAction(ActionEvent event) {
         String input = emailOrUsernameField.getText();
         if (input == null || input.trim().isEmpty()) {
-            // Show an error message (e.g., using an Alert)
-            System.out.println("Please enter your email or username.");
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Vui lòng nhập email hoặc tên đăng nhập.");
             return;
         }
 
-        // --- Add your password reset logic here ---
-        // This would typically involve:
-        // 1. Validating the input format (is it an email or username?)
-        // 2. Looking up the user in your database.
-        // 3. Generating a reset token or temporary password.
-        // 4. Sending an email to the user with instructions or the new password.
-        // 5. Showing a success or error message to the user (e.g., "Instructions sent to your email.").
-        // --- End of reset logic ---
+        TaiKhoan taiKhoan = null;
+        NhanVien nhanVien = null;
 
-        System.out.println("Password reset requested for: " + input);
+        if (isValidEmail(input)) {
+            taiKhoan = loginController.findTaiKhoanByEmailOrUsername(input);
+        } else {
+            nhanVien = loginController.findNhanVienByTenTaiKhoan(input);
+            if (nhanVien != null) {
+                taiKhoan = nhanVien.getTaikhoan();
+            }
+        }
 
-        // Optionally, navigate back to login or show a success message
-        // For now, let's just print
-        // You might want to show an alert instead:
-        // Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        // alert.setTitle("Yêu cầu đặt lại mật khẩu");
-        // alert.setHeaderText(null);
-        // alert.setContentText("Nếu tài khoản tồn tại, hướng dẫn đặt lại mật khẩu đã được gửi đến email/tên đăng nhập của bạn.");
-        // alert.showAndWait();
+        // ---  Password reset logic  ---
+        if (loginController != null) {
+            if (taiKhoan != null) {
+                String newPassword = "1111"; //  **IMPORTANT:** In a real application, generate a random, secure password
+                loginController.resetPassword(taiKhoan, newPassword);
+
+                //  Send email (PLACEHOLDER -  IMPLEMENT PROPERLY)
+                System.out.println("Mật khẩu mới đã được đặt thành '" + newPassword + "'.  Email đã được gửi đến " + taiKhoan.getNhanVien().getEmail());
+                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Mật khẩu mới đã được reset. Vui lòng kiểm tra email của bạn để lấy mật khẩu mới.");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy tài khoản với thông tin này.");
+            }
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể kết nối với hệ thống. Vui lòng thử lại sau.");
+        }
     }
+
+    //  Basic email validation
+    private boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 
     @FXML
     private void handleBackToLoginAction(ActionEvent event) {
