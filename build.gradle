@@ -62,13 +62,13 @@ dependencies {
   annotationProcessor 'org.projectlombok:lombok:1.18.36'
   testCompileOnly 'org.projectlombok:lombok:1.18.36'
   testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
-  // Apache PDFBox
-  implementation 'org.apache.pdfbox:pdfbox:2.0.29' // Hoặc phiên bản mới nhất
-  implementation 'org.apache.pdfbox:fontbox:2.0.29' // Hoặc phiên bản tương ứng
+  implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+  implementation 'org.mindrot:jbcrypt:0.4'
+
+
 
   // Data Faker
   implementation 'net.datafaker:datafaker:2.3.0'
-
 
   // JUnit 5
   testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"

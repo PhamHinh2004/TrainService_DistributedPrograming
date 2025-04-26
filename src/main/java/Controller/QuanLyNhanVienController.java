@@ -69,6 +69,8 @@ public class QuanLyNhanVienController implements Initializable {
     private ObservableList<NhanVien> masterEmployeeList = FXCollections.observableArrayList();
     private FilteredList<NhanVien> filteredEmployeeList;
 
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Populate ComboBoxes with Enum values

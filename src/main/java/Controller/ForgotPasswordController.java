@@ -1,6 +1,7 @@
 package Controller; // Adjust package name if necessary
 
 import Model.TaiKhoan;
+import Model.NhanVien;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,27 +33,33 @@ public class ForgotPasswordController {
     private void handleResetPasswordAction(ActionEvent event) {
         String input = emailOrUsernameField.getText();
         if (input == null || input.trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Vui lòng nhập email.");
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Vui lòng nhập email hoặc tên đăng nhập.");
             return;
         }
 
-        if (!isValidEmail(input)) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi", "Email không hợp lệ.");
-            return;
+        TaiKhoan taiKhoan = null;
+        NhanVien nhanVien = null;
+
+        if (isValidEmail(input)) {
+            taiKhoan = loginController.findTaiKhoanByEmailOrUsername(input);
+        } else {
+            nhanVien = loginController.findNhanVienByTenTaiKhoan(input);
+            if (nhanVien != null) {
+                taiKhoan = nhanVien.getTaikhoan();
+            }
         }
 
         // ---  Password reset logic  ---
         if (loginController != null) {
-            TaiKhoan taiKhoan = loginController.findTaiKhoanByEmail(input); // Assuming this method is added to LoginController
-
             if (taiKhoan != null) {
-                String newPassword = "1111";
-                loginController.resetPassword(taiKhoan, newPassword); // Assuming this method is added to LoginController
+                String newPassword = "1111"; //  **IMPORTANT:** In a real application, generate a random, secure password
+                loginController.resetPassword(taiKhoan, newPassword);
+
                 //  Send email (PLACEHOLDER -  IMPLEMENT PROPERLY)
-                System.out.println("Mật khẩu mới đã được đặt thành '" + newPassword + "'.  Email đã được gửi đến " + input);
-                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Mật khẩu mới đã được đặt thành '" + newPassword + "'. Vui lòng kiểm tra email của bạn.");
+                System.out.println("Mật khẩu mới đã được đặt thành '" + newPassword + "'.  Email đã được gửi đến " + taiKhoan.getNhanVien().getEmail());
+                showAlert(Alert.AlertType.INFORMATION, "Thành công", "Mật khẩu mới đã được reset. Vui lòng kiểm tra email của bạn để lấy mật khẩu mới.");
             } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy tài khoản với email này.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi", "Không tìm thấy tài khoản với thông tin này.");
             }
         } else {
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể kết nối với hệ thống. Vui lòng thử lại sau.");
@@ -61,9 +68,12 @@ public class ForgotPasswordController {
 
     //  Basic email validation
     private boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(emailRegex);
+        Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
 

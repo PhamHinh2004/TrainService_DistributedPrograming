@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,15 +59,12 @@ public class LoginController {
             System.err.println("Error initializing JPA: " + e.getMessage());
             e.printStackTrace();
         }
-        System.out.println("LoginController initialized");
-
-        // Add event listener to password field
         passwordField.setOnKeyPressed(this::handlePasswordFieldKeyPressed);
     }
 
     @FXML
     void handleLoginAction(ActionEvent event) {
-        performLogin();
+        performLogin(event);
     }
 
     @FXML
@@ -88,28 +86,29 @@ public class LoginController {
         }
     }
 
-    public TaiKhoan findTaiKhoanByEmail(String email) {
+    public TaiKhoan findTaiKhoanByEmailOrUsername(String identifier) {
         try {
-            String jpql = "SELECT tk FROM TaiKhoan tk JOIN FETCH tk.nhanVien nv WHERE nv.email = :email";
+            String jpql = "SELECT tk FROM TaiKhoan tk JOIN FETCH tk.nhanVien nv WHERE nv.email = :identifier OR tk.tenTaiKhoan = :identifier";
             TypedQuery<TaiKhoan> query = em.createQuery(jpql, TaiKhoan.class);
-            query.setParameter("email", email);
-
-            System.out.println("Executing JPQL: " + jpql);
-            System.out.println("Searching for email: " + email);
-
-            TaiKhoan taiKhoan = query.getSingleResult();
-
-            System.out.println("TaiKhoan found: " + taiKhoan);
-            if (taiKhoan != null && taiKhoan.getNhanVien() != null) {
-                System.out.println("NhanVien email: " + taiKhoan.getNhanVien().getEmail());
-            }
-
-            return taiKhoan;
+            query.setParameter("identifier", identifier);
+            return query.getSingleResult();
         } catch (jakarta.persistence.NoResultException e) {
-            System.out.println("No TaiKhoan found for email: " + email);
             return null;
         } catch (Exception e) {
-            System.err.println("Error in findTaiKhoanByEmail: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public NhanVien findNhanVienByTenTaiKhoan(String tenTaiKhoan) {
+        try {
+            String jpql = "SELECT nv FROM NhanVien nv JOIN FETCH nv.taikhoan tk WHERE tk.tenTaiKhoan = :tenTaiKhoan";
+            TypedQuery<NhanVien> query = em.createQuery(jpql, NhanVien.class);
+            query.setParameter("tenTaiKhoan", tenTaiKhoan);
+            return query.getSingleResult();
+        } catch (jakarta.persistence.NoResultException e) {
+            return null;
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -118,15 +117,19 @@ public class LoginController {
     public void resetPassword(TaiKhoan taiKhoan, String newPassword) {
         try {
             em.getTransaction().begin();
-            taiKhoan.setMatKhau(newPassword);
-            em.merge(taiKhoan);
-            em.getTransaction().commit();
+            String hashedPassword = hashPassword(newPassword);
+            if (hashedPassword != null) {
+                taiKhoan.setMatKhau(hashedPassword);
+                em.merge(taiKhoan);
+                em.getTransaction().commit();
+            } else {
+                em.getTransaction().rollback();
+            }
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
             e.printStackTrace();
-            System.err.println("Error resetting password: " + e.getMessage());
         }
     }
 
@@ -137,17 +140,10 @@ public class LoginController {
                 Node source = (Node) event.getSource();
                 currentStage = (Stage) source.getScene().getWindow();
             } else {
-                // If the event is null (e.g., from Enter key), get the stage from any node
                 currentStage = (Stage) userField.getScene().getWindow();
             }
 
-            URL fxmlUrl = getClass().getResource("/View/MainView.fxml");
-            if (fxmlUrl == null) {
-                System.err.println("Không tìm thấy file FXML Màn hình chính: /View/MainView.fxml");
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/MainView.fxml"));
             Parent mainAppRoot = loader.load();
 
             MainController mainController = loader.getController();
@@ -155,9 +151,7 @@ public class LoginController {
 
             Scene mainAppScene = new Scene(mainAppRoot);
             URL cssUrl = getClass().getResource("/CSS/style.css");
-            if (cssUrl == null) {
-                System.err.println("CSS file not found: /CSS/style.css");
-            } else {
+            if (cssUrl != null) {
                 mainAppScene.getStylesheets().add(cssUrl.toExternalForm());
             }
 
@@ -167,69 +161,73 @@ public class LoginController {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Lỗi khi tải FXML Màn hình chính: " + e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Đã xảy ra lỗi không xác định khi tải màn hình chính: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể tải màn hình chính.");
         }
     }
 
-    public void close() {
-        if (em != null && em.isOpen()) em.close();
-        if (emf != null) emf.close();
-        System.out.println("LoginController close() called.");
-    }
-
-    private void performLogin() {
+    private void performLogin(ActionEvent event) {
         String username = userField.getText();
         String password = passwordField.getText();
 
-        System.out.println("Attempting login for user: " + username);
-
         if (em != null && em.isOpen()) {
             try {
-                String jpql = "SELECT tk FROM TaiKhoan tk " +
-                        "JOIN FETCH tk.nhomQuyen " +
-                        "WHERE tk.tenTaiKhoan = :username AND tk.matKhau = :password";
+                String jpql = "SELECT tk FROM TaiKhoan tk JOIN FETCH tk.nhomQuyen WHERE tk.tenTaiKhoan = :username";
                 TypedQuery<TaiKhoan> query = em.createQuery(jpql, TaiKhoan.class);
                 query.setParameter("username", username);
-                query.setParameter("password", password);
 
                 TaiKhoan taiKhoan = query.getSingleResult();
 
                 if (taiKhoan != null) {
-                    loggedInUser = taiKhoan.getNhanVien();
-                    NhomQuyen userRole = taiKhoan.getNhomQuyen();
+                    if (BCrypt.checkpw(password, taiKhoan.getMatKhau())) {
+                        loggedInUser = taiKhoan.getNhanVien();
+                        NhomQuyen userRole = taiKhoan.getNhomQuyen();
 
-                    if (loggedInUser != null) {
-                        System.out.println("Login successful for user: " + loggedInUser.getTenNhanVien() +
-                                ", Role: " + userRole.getTenNhomQuyen());
-                        loadMainScreen(null, loggedInUser, userRole); // Passing null ActionEvent
+                        if (loggedInUser != null) {
+                            loadMainScreen(event, loggedInUser, userRole);
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Lỗi", "Tài khoản không có nhân viên liên kết.");
+                        }
                     } else {
-                        System.out.println("Login successful, but no NhanVien associated.");
+                        showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Mật khẩu không đúng!");
                     }
                 } else {
-                    System.out.println("Login failed: Invalid username or password.");
-                    // TODO: Show error
+                    showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản không tồn tại!");
                 }
 
             } catch (jakarta.persistence.NoResultException e) {
-                System.out.println("Login failed: Invalid username or password.");
-                // TODO: Show error
+                showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản không tồn tại!");
             } catch (Exception e) {
-                System.err.println("Error during login: " + e.getMessage());
                 e.printStackTrace();
-                // TODO: Show error
+                showAlert(Alert.AlertType.ERROR, "Lỗi hệ thống", "Đã xảy ra lỗi trong quá trình đăng nhập.");
             }
         } else {
-            System.err.println("Entity Manager is not initialized or closed.");
-            // TODO: Show error
+            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể kết nối đến hệ thống.");
         }
     }
 
     private void handlePasswordFieldKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            performLogin();
+            performLogin(null);
         }
+    }
+
+    private String hashPassword(String plainPassword) {
+        if (plainPassword == null || plainPassword.isEmpty()) {
+            return null;
+        }
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    public void close() {
+        if (em != null && em.isOpen()) em.close();
+        if (emf != null) emf.close();
+        System.out.println("LoginController close() called.");
     }
 }
